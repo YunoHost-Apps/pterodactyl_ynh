@@ -72,11 +72,12 @@ ynh_app_setting_set $app is_public $is_public
 # INSTALL DEPS
 #==============================================
 ## Install MariaDB 10.1
-ynh_package_install software-properties-common dirmngr mariadb-common mariadb-server mariadb-client
+#ynh_package_install software-properties-common dirmngr mariadb-common mariadb-server mariadb-client
+ynh_package_install software-properties-common dirmngr
 
 ## Start mariadb
-systemctl start mariadb
-systemctl enable mariadb
+#systemctl start mariadb
+#systemctl enable mariadb
 
 ## Install the PHP 7.2 repo for debian
 ynh_package_install ca-certificates apt-transport-https
@@ -86,7 +87,7 @@ echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.li
 ## Get apt updates
 ynh_package_update
 
-ynh_install_php7
+#ynh_install_php7
 
 ## Install PHP 7.2
 ynh_package_install php7.2 php7.2-cli php7.2-gd php7.2-mysql php7.2-pdo php7.2-mbstring php7.2-tokenizer php7.2-bcmath php7.2-xml php7.2-fpm php7.2-curl php7.2-zip
@@ -156,17 +157,27 @@ ynh_replace_string "yunobase"   "$db_name"    "$final_path/.env"
 ynh_replace_string "yunomail"   "$email"      "$final_path/.env"
 ynh_replace_string "yunodomain" "$domain"     "$final_path/.env"
 
-init_composer $final_path
-( cd $final_path && sudo /usr/bin/php7.2 artisan config:clear )
+#init_composer $final_path
+#( cd $final_path && sudo /usr/bin/php7.2 artisan config:clear )
 
 db_name=$(ynh_sanitize_dbid $app)
+
+#==============================================
+# INSTALL Composer
+#==============================================
+
+sudo -u "admin" "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer"
+
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "if (hash_file('sha384', 'composer-setup.php') === '93b54496392c062774670ac18b134c3b3a95e5a5e5c8f1a9f115f203b75bf9a129d5daa8ba6a13e2cc8a1da0806388a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+php composer-setup.php --install-dir=/usr/bin --filename=composer
+php -r "unlink('composer-setup.php');"
 
 # setup application config
 (
 cd $final_path && chmod -R 755 storage/* bootstrap/cache/
-#cd $final_path && composer install --no-dev --optimize-autoloader
+cd $final_path && composer install --no-dev --optimize-autoloader
 chmod -R 755 storage/* bootstrap/cache
-composer install --no-progress
 cd $final_path && php artisan key:generate --force
 cd $final_path && php artisan migrate ynh_die
 cd $final_path && php artisan db:seed
