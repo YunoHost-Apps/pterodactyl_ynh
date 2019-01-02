@@ -21,5 +21,5 @@ Pterodactyl Panel
  
 ### Upgrade this package:
 
-        $ sudo yunohost app upgrade pufferpanel -u https://github.com/YunoHost-Apps/pterodactyl_ynh
+        $ sudo yunohost app upgrade pterodactyl -u https://github.com/YunoHost-Apps/pterodactyl_ynh
 
