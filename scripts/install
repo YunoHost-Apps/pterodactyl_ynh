@@ -150,7 +150,7 @@ db_name=$(ynh_sanitize_dbid $app)
 (
 cd $final_path && chmod -R 755 storage/* bootstrap/cache/
 cd $final_path && chmod -R 755 storage/* bootstrap/cache/
-cd $final_path && composer install --no-dev --optimize-autoloader
+#cd $final_path && composer install --no-dev --optimize-autoloader
 cd $final_path && /usr/bin/php7.2 artisan key:generate --force
 cd $final_path && /usr/bin/php7.2 artisan p:environment:setup --author=pterodactyl@$domain --url=https://$domain$path_url --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
 cd $final_path && /usr/bin/php7.2 artisan p:environment:database --host=127.0.0.1 --port=3306 --database=$db_name --username=$db_user --password=$db_pass
