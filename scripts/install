@@ -78,7 +78,7 @@ ynh_package_install software-properties-common dirmngr mariadb-common mariadb-se
 systemctl start mariadb
 systemctl enable mariadb
 
-ynh_install_php7
+#ynh_install_php7
 
 #=================================================
 # CREATE A MYSQL DATABASE
