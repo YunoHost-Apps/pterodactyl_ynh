@@ -166,8 +166,6 @@ db_name=$(ynh_sanitize_dbid $app)
 # INSTALL Composer
 #==============================================
 
-#curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 php -r "if (hash_file('sha384', 'composer-setup.php') === '93b54496392c062774670ac18b134c3b3a95e5a5e5c8f1a9f115f203b75bf9a129d5daa8ba6a13e2cc8a1da0806388a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 php composer-setup.php --install-dir=/usr/bin --filename=composer
@@ -177,15 +175,10 @@ php -r "unlink('composer-setup.php');"
 (
 cd $final_path && chmod -R 755 storage/* bootstrap/cache/
 cd $final_path && composer install --no-dev --optimize-autoloader
-chmod -R 755 storage/* bootstrap/cache
-cd $final_path && php artisan key:generate --force
-cd $final_path && php artisan migrate ynh_die
-cd $final_path && php artisan db:seed
-cd $final_path && php artisan p:user:make --name-first Test --name-last Admin --username admin --email testadmin@pterodactyl.io --password Ptero123 --admin 1 && ynh_die
 cd $final_path && php artisan key:generate --force
 cd $final_path && php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
 cd $final_path && php artisan p:environment:database --host=127.0.0.1 --port=3306 --database=$db_name --username=$db_name --password=$db_pwd
-cd $final_path && php artisan p:user:make --name-first Test --name-last Admin --username admin --email testadmin@pterodactyl.io --password Ptero123 --admin 1
+cd $final_path && php artisan p:user:make --name-first=Test --name-last=Admin --username=admin --email=testadmin@pterodactyl.io --password=Ptero123 --admin 1
 cd $final_path && php artisan migrate --seed
 cd $final_path && chown -R www-data:www-data *
 )
