@@ -1,0 +1,58 @@
+{
+    "name": "Pterodactyl",
+    "id": "pterodactyl",
+    "packaging_format": 1,
+    "description": {
+        "en": "Pterodactyl package for YunoHost.",
+        "fr": "Pterodactyl pour YunoHost."
+    },
+    "version": "0.7.11",
+    "url": "https://pterodactyl.io/",
+    "license": "free",
+    "maintainer": {
+        "name": "liberodark",
+        "email": "liberodark@gmail.com"
+    },
+    "requirements": {
+        "yunohost": ">= 2.7.2"
+    },
+    "multi_instance": true,
+    "services": [
+        "nginx",
+        "php5-fpm",
+        "mysql"
+    ],
+    "arguments": {
+        "install": [{
+                "name": "domain",
+                "type": "domain",
+                "ask": {
+                    "en": "Choose a domain name for Pterodactyl",
+                    "fr": "Choisissez un nom de domaine pour Pterodactyl"
+                },
+                "example": "example.com"
+            },
+
+            {
+                "name": "path",
+                "type": "path",
+                "ask": {
+                    "en": "Choose a path for Pterodactyl only /pterodactyl is accepted",
+                    "fr": "Choisissez un chemin pour Pterodactyl uniquement /pterodactyl est accepté"
+                },
+                "example": "/pterodactyl",
+                "default": "/pterodactyl"
+            },
+            
+            {
+                "name": "is_public",
+                "type": "boolean",
+                "ask": {
+                    "en": "Is it a public site ?",
+                    "fr": "Est-ce un site public ?"
+                },
+                "default": "true"
+            }
+        ]
+    }
+}
