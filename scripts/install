@@ -194,10 +194,7 @@ yunohost service add $app --log "/var/log/$app/$app-prod.log"
 # Cron
 #==============================================
 
-crontab -l > pterodactyl
-echo "* * * * * php /var/www/pterodactyl/artisan schedule:run" >> pterodactyl
-crontab pterodactyl
-#crontab -l | { cat; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run"; } | crontab -
+su $app -c 'crontab -l | { cat; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run" ; } | crontab -'
 
 #=================================================
 # GENERIC FINALIZATION
