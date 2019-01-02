@@ -98,22 +98,22 @@ ynh_app_setting_set $app port $port
 #apt update
 
 ## Install MariaDB 10.1
-apt install -y mariadb-common mariadb-server mariadb-client
+ynh_package_install mariadb-common mariadb-server mariadb-client
 
 ## Start mariadb
 systemctl start mariadb
 systemctl enable mariadb
 
 ## Install the PHP 7.2 repo for debian
-apt install -y ca-certificates apt-transport-https
+ynh_package_install ca-certificates apt-transport-https
 wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
 echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
 
 ## Get apt updates
-apt update
+ynh_package_update
 
 ## Install PHP 7.2
-apt install -y php7.2 php7.2-cli php7.2-gd php7.2-mysql php7.2-pdo php7.2-mbstring php7.2-tokenizer php7.2-bcmath php7.2-xml php7.2-fpm php7.2-curl php7.2-zip
+ynh_package_install php7.2 php7.2-cli php7.2-gd php7.2-mysql php7.2-pdo php7.2-mbstring php7.2-tokenizer php7.2-bcmath php7.2-xml php7.2-fpm php7.2-curl php7.2-zip
 
 ## Start php7
 systemctl enable php7.2-fpm
