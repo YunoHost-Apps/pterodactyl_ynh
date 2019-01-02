@@ -186,6 +186,7 @@ systemctl enable $app.service
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
+mkdir -p /var/log/pterodactyl/
 touch /var/log/$app/$app-prod.log
 yunohost service add $app --log "/var/log/$app/$app-prod.log"
 
