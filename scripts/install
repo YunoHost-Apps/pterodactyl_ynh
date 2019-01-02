@@ -186,15 +186,17 @@ cd $final_path
 chmod -R 755 storage/* bootstrap/cache/
 composer install --no-dev --optimize-autoloader
 php artisan key:generate --force
-php artisan p:environment:setup
-php artisan p:environment:database
-php artisan p:environment:mail
+hp artisan p:environment:setup --author=$email --url=https:// --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
+php artisan p:environment:database --host=localhost --port=3306 --database=$db_name --username=$db_user --password=$db_pass
+php artisan p:user:make --email=test@example.com --admin=1
 php artisan migrate --seed
 php artisan p:user:make
 chown -R www-data:www-data *
 
-#cron
-#* * * * * php /var/www/pterodactyl/artisan schedule:run >> /dev/null 2>&1
+#Cron
+crontab -l > pterodactyl
+echo "* * * * * php /var/www/pterodactyl/artisan schedule:run" >> pterodactyl
+crontab pterodactyl
 
 #=================================================
 # NGINX CONFIGURATION
