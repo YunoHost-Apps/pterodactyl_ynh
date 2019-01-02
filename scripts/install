@@ -197,6 +197,7 @@ chown -R www-data:www-data *
 crontab -l > pterodactyl
 echo "* * * * * php /var/www/pterodactyl/artisan schedule:run" >> pterodactyl
 crontab pterodactyl
+#crontab -l | { cat; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run"; } | crontab -
 
 #=================================================
 # NGINX CONFIGURATION
