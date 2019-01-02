@@ -165,7 +165,6 @@ db_name=$(ynh_sanitize_dbid $app)
 (
 cd $final_path && chmod -R 755 storage/* bootstrap/cache/
 #cd $final_path && composer install --no-dev --optimize-autoloader
-cp /var/www/html/pterodactyl/.dev/vagrant/.env.vagrant /var/www/html/pterodactyl/.env
 chmod -R 755 storage/* bootstrap/cache
 composer install --no-progress
 cd $final_path && php artisan key:generate --force
