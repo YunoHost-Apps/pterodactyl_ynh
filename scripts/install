@@ -165,7 +165,7 @@ ynh_setup_source "$final_path"
 # Install Pterodactyl
 #==============================================
 
-chmod -R 755 storage/* bootstrap/cache
+chmod -R 755 $final_path/storage/* $final_path/bootstrap/cache
 composer install --no-progress
 php artisan key:generate --force
 php artisan migrate
