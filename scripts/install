@@ -128,14 +128,6 @@ ynh_add_nginx_config
 # Create a system user
 ynh_system_user_create $app
 
-
-#=================================================
-# PHP-FPM 7.2 CONFIGURATION
-#=================================================
-
-# Create a dedicated php-fpm7.1 config
-#ynh_add_fpm7.2_config
-
 #=================================================
 # SPECIFIC SETUP
 #=================================================
@@ -157,11 +149,6 @@ ynh_replace_string "yunobase"   "$db_name"    "$final_path/.env"
 ynh_replace_string "yunomail"   "$email"      "$final_path/.env"
 ynh_replace_string "yunodomain" "$domain"     "$final_path/.env"
 
-#init_composer $final_path
-#( cd $final_path && sudo /usr/bin/php7.2 artisan config:clear )
-
-db_name=$(ynh_sanitize_dbid $app)
-
 #==============================================
 # INSTALL Composer
 #==============================================
@@ -171,48 +158,46 @@ php -r "if (hash_file('sha384', 'composer-setup.php') === '93b54496392c062774670
 php composer-setup.php --install-dir=/usr/bin --filename=composer
 php -r "unlink('composer-setup.php');"
 
-# setup application config
-(
-cd $final_path && chmod -R 755 storage/* bootstrap/cache/
-cd $final_path && composer install --no-dev --optimize-autoloader
-cd $final_path && php artisan key:generate --force
-cd $final_path && php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
-cd $final_path && php artisan p:environment:database --host=127.0.0.1 --port=3306 --database=$db_name --username=$db_name --password=$db_pwd
-cd $final_path && php artisan p:user:make
-cd $final_path && php artisan migrate --seed
-cd $final_path && chown -R www-data:www-data *
-)
+#==============================================
+# Install Pterodactyl
+#==============================================
 
-cp -a ../conf/pteroq.service /etc/systemd/system/pteroq.service
+chmod -R 755 storage/* bootstrap/cache
+composer install --no-progress
+php artisan key:generate --force
+php artisan migrate
+php artisan db:seed
+php artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
+php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
 
+#=================================================
+# SETUP SYSTEMD
+#=================================================
 
-#Cron
+ynh_add_systemd_config
+systemctl enable $app.service
+
+#=================================================
+# ADVERTISE SERVICE IN ADMIN PANEL
+#=================================================
+
+touch /var/log/$app/$app-prod.log
+yunohost service add $app --log "/var/log/$app/$app-prod.log"
+
+#==============================================
+# Cron
+#==============================================
+
 crontab -l > pterodactyl
 echo "* * * * * php /var/www/pterodactyl/artisan schedule:run" >> pterodactyl
 crontab pterodactyl
 #crontab -l | { cat; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run"; } | crontab -
 
 #=================================================
-# STORE THE CONFIG FILE CHECKSUM
-#=================================================
-
-### `ynh_store_file_checksum` is used to store the checksum of a file.
-### That way, during the upgrade script, by using `ynh_backup_if_checksum_is_different`,
-### you can make a backup of this file before modifying it again if the admin had modified it.
-
-# Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum "$final_path/.env"
-
-
-#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
-
-### For security reason, any app should set the permissions to root: before anything else.
-### Then, if write authorization is needed, any access should be given only to directories
-### that really need such authorization.
 
 # Set permissions to app files
 chown -R $app: $final_path
@@ -221,19 +206,15 @@ chown -R $app: $final_path
 # SETUP SSOWAT
 #=================================================
 
-# If app is public, add url to SSOWat conf as skipped_uris
-if [ $is_public -eq 1 ]; then
-  # unprotected_uris allows SSO credentials to be passed anyway.
-  ynh_app_setting_set "$app" unprotected_uris "/"
+# Make app public if necessary
+if [ $is_public -eq 1 ]
+then
+	# unprotected_uris allows SSO credentials to be passed anyway.
+	ynh_app_setting_set $app unprotected_uris "/"
 fi
 
-# Reload services
-systemctl reload php7.2-fpm
+#=================================================
+# RELOAD NGINX
+#=================================================
+
 systemctl reload nginx
-sudo systemctl enable --now pteroq.service
-# Set default php to php5 or php7.0
-if [ "$(lsb_release --codename --short)" == "jessie" ]; then
-	update-alternatives --set php /usr/bin/php5
-else
-    update-alternatives --set php /usr/bin/php7.0
-fi
