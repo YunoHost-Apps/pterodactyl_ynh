@@ -147,10 +147,15 @@ ynh_system_user_create $app
 ###		- Remove also the section "REMOVE THE MYSQL DATABASE" in the remove script
 ###		- As well as the section "RESTORE THE MYSQL DATABASE" in the restore script
 
-db_name=$(ynh_sanitize_dbid $app)
-ynh_app_setting_set $app db_name $db_name
-ynh_mysql_setup_db $db_name $db_name
+#db_name=$(ynh_sanitize_dbid $app)
+#ynh_app_setting_set $app db_name $db_name
+#ynh_mysql_setup_db $db_name $db_name
 #ynh_mysql_execute_as_root <<< "GRANT ALL PRIVILEGES ON $db_name.* TO '$app'@'localhost' WITH GRANT OPTION;FLUSH PRIVILEGES;"
+
+db_user=$app
+db_name=$app
+db_pass=$(ynh_string_random 20)
+ynh_app_setting_set $app db_pass $db_pass
 
 #==============================================
 # INSTALL Composer
@@ -160,16 +165,25 @@ ynh_mysql_setup_db $db_name $db_name
 
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 php -r "if (hash_file('sha384', 'composer-setup.php') === '93b54496392c062774670ac18b134c3b3a95e5a5e5c8f1a9f115f203b75bf9a129d5daa8ba6a13e2cc8a1da0806388a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-php composer-setup.php
+php composer-setup.php --install-dir=/usr/bin --filename=composer
 php -r "unlink('composer-setup.php');"
+
+#=================================================
+# MODIFY A CONFIG FILE
+#=================================================
+
+# Main config File
+ynh_replace_string "__DB_USER__" "$db_user" "../conf/.env.example"
+ynh_replace_string "__DB_NAME__" "$db_name" "../conf/.env.example"
+ynh_replace_string "__DB_PASS__" "$db_pass" "../conf/.env.example"
+cp -a ../conf/.env.example $final_path/.env
 
 #==============================================
 # INSTALL Pterodactyl
 #==============================================
 
-cd /var/www/pterodactyl
+cd $final_path
 chmod -R 755 storage/* bootstrap/cache/
-cp .env.example .env
 composer install --no-dev --optimize-autoloader
 php artisan key:generate --force
 php artisan p:environment:setup
@@ -219,7 +233,6 @@ cp -a ../conf/pteroq.service /etc/systemd/system/pteroq.service
 
 # Set permissions to app files
 #chown -R root: /etc/loolwsd
-
 
 #=================================================
 # SETUP SSOWAT
