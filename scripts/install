@@ -164,6 +164,7 @@ ynh_replace_string "__DB_USER__" "$db_user" "../conf/.env.example"
 ynh_replace_string "__DB_NAME__" "$db_name" "../conf/.env.example"
 ynh_replace_string "__DB_PASS__" "$db_pass" "../conf/.env.example"
 cp -a ../conf/.env.example $final_path/.env
+cp -a ../conf/pteroq.service /etc/systemd/system/pteroq.service
 
 #==============================================
 # INSTALL Pterodactyl
@@ -192,12 +193,6 @@ crontab pterodactyl
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
-
-#=================================================
-# MODIFY A CONFIG FILE
-#=================================================
-
-cp -a ../conf/pteroq.service /etc/systemd/system/pteroq.service
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
