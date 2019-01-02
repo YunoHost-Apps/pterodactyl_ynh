@@ -85,11 +85,11 @@ ynh_app_setting_set $app port $port
 # INSTALL DEPS
 #==============================================
 ynh_package_install software-properties-common
-LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
+#LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
 #add-apt-repository -y ppa:chris-lea/redis-server
 #curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
 apt update
-ynh_package_install php7.2 php7.2-cli php7.2-gd php7.2-mysql php7.2-pdo php7.2-mbstring php7.2-tokenizer php7.2-bcmath php7.2-xml php7.2-fpm php7.2-curl php7.2-zip mariadb-server nginx curl tar unzip git
+ynh_package_install mariadb-server nginx curl tar unzip git
 
 curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
 
