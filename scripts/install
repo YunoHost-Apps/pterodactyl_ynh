@@ -78,7 +78,22 @@ ynh_package_install software-properties-common dirmngr mariadb-common mariadb-se
 systemctl start mariadb
 systemctl enable mariadb
 
+## Install the PHP 7.2 repo for debian
+ynh_package_install ca-certificates apt-transport-https
+wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
+echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
+
+## Get apt updates
+ynh_package_update
+
 ynh_install_php7
+
+## Install PHP 7.2
+ynh_package_install php7.2 php7.2-cli php7.2-gd php7.2-mysql php7.2-pdo php7.2-mbstring php7.2-tokenizer php7.2-bcmath php7.2-xml php7.2-fpm php7.2-curl php7.2-zip
+
+## Start php7
+systemctl enable php7.2-fpm
+systemctl start php7.2-fpm
 
 #=================================================
 # CREATE A MYSQL DATABASE
@@ -118,7 +133,7 @@ ynh_system_user_create $app
 #=================================================
 
 # Create a dedicated php-fpm7.1 config
-ynh_add_fpm7.2_config
+#ynh_add_fpm7.2_config
 
 #=================================================
 # SPECIFIC SETUP
@@ -149,13 +164,19 @@ db_name=$(ynh_sanitize_dbid $app)
 # setup application config
 (
 cd $final_path && chmod -R 755 storage/* bootstrap/cache/
-cd $final_path && chmod -R 755 storage/* bootstrap/cache/
 #cd $final_path && composer install --no-dev --optimize-autoloader
-cd $final_path && /usr/bin/php7.2 artisan key:generate --force
-cd $final_path && /usr/bin/php7.2 artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
-cd $final_path && /usr/bin/php7.2 artisan p:environment:database --host=127.0.0.1 --port=3306 --database=$db_name --username=$db_name --password=$db_pwd
-cd $final_path && /usr/bin/php7.2 artisan p:user:make --name-first Test --name-last Admin --username admin --email testadmin@pterodactyl.io --password Ptero123 --admin 1
-cd $final_path && /usr/bin/php7.2 artisan migrate --seed
+cp /var/www/html/pterodactyl/.dev/vagrant/.env.vagrant /var/www/html/pterodactyl/.env
+chmod -R 755 storage/* bootstrap/cache
+composer install --no-progress
+cd $final_path && php artisan key:generate --force
+cd $final_path && php artisan migrate ynh_die
+cd $final_path && php artisan db:seed
+cd $final_path && php artisan p:user:make --name-first Test --name-last Admin --username admin --email testadmin@pterodactyl.io --password Ptero123 --admin 1 && ynh_die
+cd $final_path && php artisan key:generate --force
+cd $final_path && php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
+cd $final_path && php artisan p:environment:database --host=127.0.0.1 --port=3306 --database=$db_name --username=$db_name --password=$db_pwd
+cd $final_path && php artisan p:user:make --name-first Test --name-last Admin --username admin --email testadmin@pterodactyl.io --password Ptero123 --admin 1
+cd $final_path && php artisan migrate --seed
 cd $final_path && chown -R www-data:www-data *
 )
 
