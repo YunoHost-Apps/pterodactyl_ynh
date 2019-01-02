@@ -64,22 +64,8 @@ ynh_webpath_register $app $domain $path_url
 
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app path $path_url
+ynh_app_setting_set $app admin $admin
 ynh_app_setting_set $app is_public $is_public
-
-#=================================================
-# FIND AND OPEN A PORT
-#=================================================
-
-### Use these lines if you have to open a port for the application
-### `ynh_find_port` will find the first available port starting from the given port.
-### If you're not using these lines:
-###		- Remove the section "CLOSE A PORT" in the remove script
-
-# Find a free port
-port=$(ynh_find_port 8096)
-# Open this port
-yunohost firewall allow --no-upnp TCP $port 2>&1
-ynh_app_setting_set $app port $port
 
 #==============================================
 # INSTALL DEPS
@@ -91,20 +77,17 @@ ynh_package_install software-properties-common dirmngr mariadb-common mariadb-se
 systemctl start mariadb
 systemctl enable mariadb
 
-## Install the PHP 7.2 repo for debian
-ynh_package_install ca-certificates apt-transport-https
-wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
-echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
+ynh_install_php7
 
-## Get apt updates
-ynh_package_update
+#=================================================
+# CREATE A MYSQL DATABASE
+#=================================================
+# If your app uses a MySQL database, you can use these lines to bootstrap
+# a database, an associated user and save the password in app settings
 
-## Install PHP 7.2
-ynh_package_install php7.2 php7.2-cli php7.2-gd php7.2-mysql php7.2-pdo php7.2-mbstring php7.2-tokenizer php7.2-bcmath php7.2-xml php7.2-fpm php7.2-curl php7.2-zip
-
-## Start php7
-systemctl enable php7.2-fpm
-systemctl start php7.2-fpm
+db_name=$(ynh_sanitize_dbid $app)
+ynh_app_setting_set $app db_name $db_name
+ynh_mysql_setup_db $db_name $db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -115,84 +98,75 @@ ynh_app_setting_set $app final_path $final_path
 ynh_setup_source "$final_path"
 
 #=================================================
+# NGINX CONFIGURATION
+#=================================================
+
+# Create a dedicated nginx config
+ynh_add_nginx_config
+
+#=================================================
 # CREATE DEDICATED USER
 #=================================================
 
 # Create a system user
 ynh_system_user_create $app
 
+
 #=================================================
-# CREATE A MYSQL DATABASE
+# PHP-FPM 7.2 CONFIGURATION
 #=================================================
 
-### Use these lines if you need a database for the application.
-### `ynh_mysql_setup_db` will create a database, an associated user and a ramdom password.
-### The password will be stored as 'mysqlpwd' into the app settings,
-### and will be available as $db_pwd
-### If you're not using these lines:
-###		- Remove the section "BACKUP THE MYSQL DATABASE" in the backup script
-###		- Remove also the section "REMOVE THE MYSQL DATABASE" in the remove script
-###		- As well as the section "RESTORE THE MYSQL DATABASE" in the restore script
+# Create a dedicated php-fpm7.1 config
+ynh_add_fpm7.2_config
 
-#db_name=$(ynh_sanitize_dbid $app)
-#ynh_app_setting_set $app db_name $db_name
-#ynh_mysql_setup_db $db_name $db_name
-#ynh_mysql_execute_as_root <<< "GRANT ALL PRIVILEGES ON $db_name.* TO '$app'@'localhost' WITH GRANT OPTION;FLUSH PRIVILEGES;"
+#=================================================
+# SPECIFIC SETUP
+#=================================================
 
-db_user=$app
-db_name=$app
-db_pass=$(ynh_string_random 20)
-ynh_app_setting_set $app db_pass $db_pass
+# create a user
+email=$(ynh_user_get_info $admin 'mail')
 
-#==============================================
-# INSTALL Composer
-#==============================================
-
-#sudo -u "admin" "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer"
-
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('sha384', 'composer-setup.php') === '93b54496392c062774670ac18b134c3b3a95e5a5e5c8f1a9f115f203b75bf9a129d5daa8ba6a13e2cc8a1da0806388a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-php composer-setup.php --install-dir=/usr/bin --filename=composer
-php -r "unlink('composer-setup.php');"
+# setup application config
+cp -a ../conf/.env.example $final_path/.env
 
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
 
-# Main config File
-ynh_replace_string "__DB_USER__" "$db_user" "../conf/.env.example"
-ynh_replace_string "__DB_NAME__" "$db_name" "../conf/.env.example"
-ynh_replace_string "__DB_PASS__" "$db_pass" "../conf/.env.example"
-cp -a ../conf/.env.example $final_path/.env
+#ynh_replace_string "random_key" "$random_key" "$final_path/.env"
+ynh_replace_string "yunouser"   "$db_name"    "$final_path/.env"
+ynh_replace_string "yunopass"   "$db_pwd"     "$final_path/.env"
+ynh_replace_string "yunobase"   "$db_name"    "$final_path/.env"
+ynh_replace_string "yunomail"   "$email"      "$final_path/.env"
+ynh_replace_string "yunodomain" "$domain"     "$final_path/.env"
+
+init_composer $final_path
+( cd $final_path && sudo /usr/bin/php7.2 artisan config:clear )
+
+db_name=$(ynh_sanitize_dbid $app)
+
+# setup application config
+(
+cd $final_path && chmod -R 755 storage/* bootstrap/cache/
+cd $final_path && chmod -R 755 storage/* bootstrap/cache/
+cd $final_path && composer install --no-dev --optimize-autoloader
+cd $final_path && /usr/bin/php7.2 artisan key:generate --force
+cd $final_path && /usr/bin/php7.2 artisan p:environment:setup --author=pterodactyl@$domain --url=https://$domain$path_url --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
+cd $final_path && /usr/bin/php7.2 artisan p:environment:database --host=127.0.0.1 --port=3306 --database=$db_name --username=$db_user --password=$db_pass
+cd $final_path && /usr/bin/php7.2 artisan p:user:make --email=pterodactyl@$domain --admin=1
+cd $final_path && /usr/bin/php7.2 artisan migrate --seed
+cd $final_path && /usr/bin/php7.2 artisan p:user:make
+cd $final_path && chown -R www-data:www-data *
+)
+
 cp -a ../conf/pteroq.service /etc/systemd/system/pteroq.service
 
-#==============================================
-# INSTALL Pterodactyl
-#==============================================
-
-cd $final_path
-chmod -R 755 storage/* bootstrap/cache/
-sudo -u "$app" -s "composer install --no-dev --optimize-autoloader"
-sudo -u "$app" "php artisan key:generate --force"
-sudo -u "$app" "php artisan p:environment:setup --author=admin@yuno.fr --url=https://$domain$path_url --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379"
-sudo -u "$app" "php artisan p:environment:database --host=127.0.0.1 --port=3306 --database=$db_name --username=$db_user --password=$db_pass"
-sudo -u "$app" "php artisan p:user:make --email=test@example.com --admin=1"
-sudo -u "$app" "php artisan migrate --seed"
-sudo -u "$app" "php artisan p:user:make"
-chown -R www-data:www-data *
 
 #Cron
 crontab -l > pterodactyl
 echo "* * * * * php /var/www/pterodactyl/artisan schedule:run" >> pterodactyl
 crontab pterodactyl
 #crontab -l | { cat; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run"; } | crontab -
-
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
-
-# Create a dedicated nginx config
-ynh_add_nginx_config
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
@@ -203,7 +177,7 @@ ynh_add_nginx_config
 ### you can make a backup of this file before modifying it again if the admin had modified it.
 
 # Calculate and store the config file checksum into the app settings
-#ynh_store_file_checksum "/etc/onlyoffice/documentserver/nginx/onlyoffice-documentserver.conf"
+ynh_store_file_checksum "$final_path/.env"
 
 
 #=================================================
@@ -217,7 +191,7 @@ ynh_add_nginx_config
 ### that really need such authorization.
 
 # Set permissions to app files
-#chown -R root: /etc/loolwsd
+chown -R $app: $final_path
 
 #=================================================
 # SETUP SSOWAT
@@ -230,5 +204,12 @@ if [ $is_public -eq 1 ]; then
 fi
 
 # Reload services
+systemctl reload php7.2-fpm
 systemctl reload nginx
 sudo systemctl enable --now pteroq.service
+# Set default php to php5 or php7.0
+if [ "$(lsb_release --codename --short)" == "jessie" ]; then
+	update-alternatives --set php /usr/bin/php5
+else
+    update-alternatives --set php /usr/bin/php7.0
+fi
