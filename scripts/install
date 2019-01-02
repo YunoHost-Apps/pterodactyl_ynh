@@ -165,13 +165,15 @@ ynh_setup_source "$final_path"
 # Install Pterodactyl
 #==============================================
 
-chmod -R 755 $final_path/storage/* $final_path/bootstrap/cache
+pushd $final_path
+chmod -R 755 storage/* bootstrap/cache
 composer install --no-progress
 php artisan key:generate --force
 php artisan migrate
 php artisan db:seed
 php artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
 php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
+popd
 
 #=================================================
 # SETUP SYSTEMD
