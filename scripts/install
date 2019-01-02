@@ -152,9 +152,9 @@ cd $final_path && chmod -R 755 storage/* bootstrap/cache/
 cd $final_path && chmod -R 755 storage/* bootstrap/cache/
 #cd $final_path && composer install --no-dev --optimize-autoloader
 cd $final_path && /usr/bin/php7.2 artisan key:generate --force
-cd $final_path && /usr/bin/php7.2 artisan p:environment:setup --author=pterodactyl@$domain --url=https://$domain$path_url --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
-cd $final_path && /usr/bin/php7.2 artisan p:environment:database --host=127.0.0.1 --port=3306 --database=$db_name --username=$db_user --password=$db_pass
-cd $final_path && /usr/bin/php7.2 artisan p:user:make --email=pterodactyl@$domain --admin=1
+cd $final_path && /usr/bin/php7.2 artisan p:environment:setup --author=$yunomail --url=https://$yunodomain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
+cd $final_path && /usr/bin/php7.2 artisan p:environment:database --host=127.0.0.1 --port=3306 --database=$yunobase --username=$yunouser --password=$yunopass
+cd $final_path && /usr/bin/php7.2 artisan p:user:make --email=$yunomail --admin=1
 cd $final_path && /usr/bin/php7.2 artisan migrate --seed
 cd $final_path && /usr/bin/php7.2 artisan p:user:make
 cd $final_path && chown -R www-data:www-data *
