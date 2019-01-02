@@ -84,14 +84,40 @@ ynh_app_setting_set $app port $port
 #==============================================
 # INSTALL DEPS
 #==============================================
-ynh_package_install software-properties-common
-#LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
-#add-apt-repository -y ppa:chris-lea/redis-server
-#curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
-apt update
-ynh_package_install mariadb-server nginx curl tar unzip git
+#ynh_package_install software-properties-common
 
-curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+apt install -y software-properties-common dirmngr
+
+## get MariaDB gpg keys
+apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+
+## install the MariaDB repo
+add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirror.jaleco.com/mariadb/repo/10.1/debian stretch main'
+
+## Get apt updates
+apt update
+
+## Install MariaDB 10.1
+apt install -y mariadb-common mariadb-server mariadb-client
+
+## Start mariadb
+systemctl start mariadb
+systemctl enable mariadb
+
+## Install the PHP 7.2 repo for debian
+apt install -y ca-certificates apt-transport-https
+wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
+echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
+
+## Get apt updates
+apt update
+
+## Install PHP 7.2
+apt install -y php7.2 php7.2-cli php7.2-gd php7.2-mysql php7.2-pdo php7.2-mbstring php7.2-tokenizer php7.2-bcmath php7.2-xml php7.2-fpm php7.2-curl php7.2-zip
+
+## Start php7
+systemctl enable php7.2-fpm
+systemctl start php7.2-fpm
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -101,9 +127,37 @@ ynh_app_setting_set $app final_path $final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source "$final_path"
 
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+
+# Create a system user
+ynh_system_user_create $app
+
+#=================================================
+# CREATE A MYSQL DATABASE
+#=================================================
+
+### Use these lines if you need a database for the application.
+### `ynh_mysql_setup_db` will create a database, an associated user and a ramdom password.
+### The password will be stored as 'mysqlpwd' into the app settings,
+### and will be available as $db_pwd
+### If you're not using these lines:
+###		- Remove the section "BACKUP THE MYSQL DATABASE" in the backup script
+###		- Remove also the section "REMOVE THE MYSQL DATABASE" in the remove script
+###		- As well as the section "RESTORE THE MYSQL DATABASE" in the restore script
+
+db_name=$(ynh_sanitize_dbid $app)
+ynh_app_setting_set $app db_name $db_name
+ynh_mysql_setup_db $db_name $db_name
+ynh_mysql_execute_as_root <<< "GRANT ALL PRIVILEGES ON $db_name.* TO '$app'@'127.0.0.1' WITH GRANT OPTION;
+FLUSH PRIVILEGES;"
+
 #==============================================
 # INSTALL PufferPanel
 #==============================================
+
+sudo -u "$app" "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer"
 
 cd /var/www/pterodactyl
 chmod -R 755 storage/* bootstrap/cache/
@@ -126,13 +180,6 @@ chown -R www-data:www-data *
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-
-# Create a system user
-ynh_system_user_create $app
 
 #=================================================
 # MODIFY A CONFIG FILE
