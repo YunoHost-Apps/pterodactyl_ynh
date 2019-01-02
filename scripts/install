@@ -29,6 +29,7 @@ domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 admin=$YNH_APP_ARG_ADMIN
 is_public=$YNH_APP_ARG_IS_PUBLIC
+password=$YNH_APP_ARG_PASSWORD
 
 ### If it's a multi-instance app, meaning it can be installed several times independently
 ### The id of the app as stated in the manifest is available as $YNH_APP_ID
@@ -71,13 +72,6 @@ ynh_app_setting_set $app is_public $is_public
 #==============================================
 # INSTALL DEPS
 #==============================================
-## Install MariaDB 10.1
-#ynh_package_install software-properties-common dirmngr mariadb-common mariadb-server mariadb-client
-ynh_package_install software-properties-common dirmngr
-
-## Start mariadb
-#systemctl start mariadb
-#systemctl enable mariadb
 
 ## Install the PHP 7.2 repo for debian
 ynh_package_install ca-certificates apt-transport-https
@@ -87,10 +81,7 @@ echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.li
 ## Get apt updates
 ynh_package_update
 
-#ynh_install_php7
-
-## Install PHP 7.2
-ynh_package_install php7.2 php7.2-cli php7.2-gd php7.2-mysql php7.2-pdo php7.2-mbstring php7.2-tokenizer php7.2-bcmath php7.2-xml php7.2-fpm php7.2-curl php7.2-zip
+ynh_install_app_dependencies php7.2 php7.2-cli php7.2-gd php7.2-mysql php7.2-pdo php7.2-mbstring php7.2-tokenizer php7.2-bcmath php7.2-xml php7.2-fpm php7.2-curl php7.2-zip software-properties-common dirmngr
 
 ## Start php7
 systemctl enable php7.2-fpm
@@ -157,6 +148,18 @@ php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 php -r "if (hash_file('sha384', 'composer-setup.php') === '93b54496392c062774670ac18b134c3b3a95e5a5e5c8f1a9f115f203b75bf9a129d5daa8ba6a13e2cc8a1da0806388a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 php composer-setup.php --install-dir=/usr/bin --filename=composer
 php -r "unlink('composer-setup.php');"
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+
+### `ynh_setup_source` is used to install an app from a zip or tar.gz file,
+### downloaded from an upstream source, like a git repository.
+### `ynh_setup_source` use the file conf/app.src
+
+ynh_app_setting_set $app final_path $final_path
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source "$final_path"
 
 #==============================================
 # Install Pterodactyl
