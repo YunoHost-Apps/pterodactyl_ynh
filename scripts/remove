@@ -19,18 +19,35 @@ domain=$(ynh_app_setting_get $app domain)
 port=$(ynh_app_setting_get $app port)
 final_path=$(ynh_app_setting_get $app final_path)
 
+db_name=$(ynh_app_setting_get $app db_name)
+db_user=$db_name
+
 #=================================================
 # STANDARD REMOVE
 #=================================================
-
-ynh_package_remove emby-server
-
-#=================================================
-# REMOVE DEPENDENCIES
+# STOP AND REMOVE SERVICE
 #=================================================
 
-# Remove metapackage and its dependencies
-#ynh_remove_app_dependencies
+# Remove the dedicated systemd config
+ynh_remove_systemd_config
+
+#=================================================
+# REMOVE SERVICE FROM ADMIN PANEL
+#=================================================
+
+# Remove a service from the admin panel, added by `yunohost service add`
+if yunohost service status | grep -q $app
+then
+	echo "Remove $app service"
+	yunohost service remove $app
+fi
+
+#=================================================
+# REMOVE THE MYSQL DATABASE
+#=================================================
+
+# Remove a database if it exists, along with the associated user
+ynh_mysql_remove_db $db_user $db_name
 
 #=================================================
 # REMOVE APP MAIN DIR
@@ -45,6 +62,13 @@ ynh_secure_remove "$final_path"
 
 # Remove the dedicated nginx config
 ynh_remove_nginx_config
+
+#=================================================
+# REMOVE PHP-FPM CONFIGURATION
+#=================================================
+
+# Remove the dedicated php-fpm config
+ynh_remove_fpm_config
 
 #=================================================
 # CLOSE A PORT
@@ -66,8 +90,7 @@ fi
 ynh_secure_remove "/etc/cron.d/$app"
 
 # Remove a directory securely
-ynh_secure_remove "/etc/apt/sources.list.d/onlyoffice.list"
-
+ynh_secure_remove "/etc/apt/sources.list.d/php.list"
 
 # Remove the log files
 ynh_secure_remove "/var/log/$app/"
