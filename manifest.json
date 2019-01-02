@@ -43,6 +43,16 @@
                 "example": "/pterodactyl",
                 "default": "/pterodactyl"
             },
+
+            {
+                "name": "admin",
+                "type": "user",
+                "ask": {
+                    "en": "Choose an admin user (should be a YunoHost registered user)",
+                    "fr": "Choisissez l’administrateur (should be a YunoHost registered user)"
+                },
+                "example": "johndoe"
+            },
             
             {
                 "name": "is_public",
