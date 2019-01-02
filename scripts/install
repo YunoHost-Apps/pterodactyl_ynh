@@ -174,8 +174,8 @@ cd $final_path
 chmod -R 755 storage/* bootstrap/cache/
 composer install --no-dev --optimize-autoloader
 php artisan key:generate --force
-php artisan p:environment:setup --author=admin@yuno.fr --url=https://$domain/$path_url --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
-php artisan p:environment:database --host=localhost --port=3306 --database=$db_name --username=$db_user --password=$db_pass
+php artisan p:environment:setup --author=admin@yuno.fr --url=https://'$domain''$path_url' --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
+php artisan p:environment:database --host=127.0.0.1 --port=3306 --database=$db_name --username=$db_user --password=$db_pass
 php artisan p:user:make --email=test@example.com --admin=1
 php artisan migrate --seed
 php artisan p:user:make
