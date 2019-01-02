@@ -150,7 +150,7 @@ ynh_system_user_create $app
 db_name=$(ynh_sanitize_dbid $app)
 ynh_app_setting_set $app db_name $db_name
 ynh_mysql_setup_db $db_name $db_name
-ynh_mysql_execute_as_root <<< "GRANT ALL PRIVILEGES ON $db_name.* TO '$app'@'127.0.0.1' WITH GRANT OPTION;FLUSH PRIVILEGES;"
+#ynh_mysql_execute_as_root <<< "GRANT ALL PRIVILEGES ON $db_name.* TO '$app'@'127.0.0.1' WITH GRANT OPTION;FLUSH PRIVILEGES;"
 
 #==============================================
 # INSTALL Pterodactyl
