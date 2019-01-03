@@ -193,6 +193,7 @@ curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 ynh_package_install nodejs make gcc g++
 curl -L https://github.com/pterodactyl/daemon/releases/download/v0.6.8/daemon.tar.gz | tar --strip-components=1 -xzv
 npm install --only=production
+npm audit fix
 sudo npm start
 popd
 
