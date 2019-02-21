@@ -16,6 +16,13 @@ Pterodactyl Panel
  1. App can be installed by YunoHost **admin web-interface** or by **running following command**:
 
          $ sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh
+         
+         After install :
+         
+         modify 
+         nano /srv/daemon/config/core.json
+         /etc/yunohost/certs/yourDomain.tld/crt.pem
+         /etc/yunohost/certs/yourDomain.tld/key.pem
 
  
 ### Upgrade this package:
