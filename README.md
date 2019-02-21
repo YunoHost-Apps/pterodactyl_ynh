@@ -19,10 +19,10 @@ Pterodactyl Panel
          
          After install :
          
-         modify 
-         nano /srv/daemon/config/core.json
-         /etc/yunohost/certs/yourDomain.tld/crt.pem
-         /etc/yunohost/certs/yourDomain.tld/key.pem
+         Modify 
+         sudo nano /srv/daemon/config/core.json
+         /etc/yunohost/certs/yourDomain.tld/crt.pem = SSL Certificate
+         /etc/yunohost/certs/yourDomain.tld/key.pem = SSL Key
 
  
 ### Upgrade this package:
