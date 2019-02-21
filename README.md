@@ -19,8 +19,8 @@ Pterodactyl Panel
          
          After install :
          
-         #### 1. Login in panel
-         #### 2. Create Location
+         1. Login in panel
+         2. Create Location
          3. Create Node
          4. Copy configuration node for the core.json
          5. Edit the core.json
