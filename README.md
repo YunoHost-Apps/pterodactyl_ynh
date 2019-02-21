@@ -1,8 +1,6 @@
 # Pterodactyl app for YunoHost
 Pterodactyl Panel
 
-# NOT WORK IS IN DEV
-
 - [Yunohost project](https://yunohost.org)
 - [Pterodactyl website](https://pterodactyl.io/)
 
