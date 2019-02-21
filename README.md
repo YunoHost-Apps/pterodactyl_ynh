@@ -24,12 +24,12 @@ Pterodactyl Panel
          3. Create Node
          4. Copy configuration node for the core.json
          5. Edit the core.json
-         sudo nano /srv/daemon/config/core.json
+         ```sudo nano /srv/daemon/config/core.json```
          6. For SSL change folder location for SSL Certificate & SSL Key
-         /etc/yunohost/certs/yourDomain.tld/crt.pem = SSL Certificate
-         /etc/yunohost/certs/yourDomain.tld/key.pem = SSL Key
+         ```/etc/yunohost/certs/yourDomain.tld/crt.pem = SSL Certificate```
+         ```/etc/yunohost/certs/yourDomain.tld/key.pem = SSL Key```
          7. Start wings service
-         sudo systemctl start wings
+         ```sudo systemctl start wings```
  
 ### Upgrade this package:
 
