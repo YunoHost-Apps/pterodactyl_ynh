@@ -206,7 +206,7 @@ popd
 
 ynh_add_systemd_config
 systemctl enable $app.service
-systemctl enable --now wings
+systemctl enable wings.service
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
