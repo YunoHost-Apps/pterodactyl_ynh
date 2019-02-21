@@ -69,6 +69,21 @@ ynh_app_setting_set $app path $path_url
 ynh_app_setting_set $app admin $admin
 ynh_app_setting_set $app is_public $is_public
 
+#=================================================
+# FIND AND OPEN A PORT
+#=================================================
+
+### Use these lines if you have to open a port for the application
+### `ynh_find_port` will find the first available port starting from the given port.
+### If you're not using these lines:
+###		- Remove the section "CLOSE A PORT" in the remove script
+
+# Find a free port
+port=$(ynh_find_port 8080)
+# Open this port
+yunohost firewall allow --no-upnp TCP $port 2>&1
+ynh_app_setting_set $app port $port
+
 #==============================================
 # INSTALL DEPS
 #==============================================
@@ -128,6 +143,7 @@ email=$(ynh_user_get_info $admin 'mail')
 
 # setup application config
 cp -a ../conf/.env.example $final_path/.env
+cp -a ../conf/wings.service /etc/systemd/system/wings.service
 
 #=================================================
 # MODIFY A CONFIG FILE
@@ -145,7 +161,6 @@ ynh_replace_string "yunodomain" "$domain"     "$final_path/.env"
 #==============================================
 
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('sha384', 'composer-setup.php') === '93b54496392c062774670ac18b134c3b3a95e5a5e5c8f1a9f115f203b75bf9a129d5daa8ba6a13e2cc8a1da0806388a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 php composer-setup.php --install-dir=/usr/bin --filename=composer
 php -r "unlink('composer-setup.php');"
 
@@ -191,7 +206,7 @@ mkdir -p /srv/daemon /srv/daemon-data
 pushd /srv/daemon
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 ynh_package_install nodejs make gcc g++
-curl -L https://github.com/pterodactyl/daemon/releases/download/v0.6.8/daemon.tar.gz | tar --strip-components=1 -xzv
+curl -L https://github.com/pterodactyl/daemon/releases/download/v0.6.11/daemon.tar.gz | tar --strip-components=1 -xzv
 npm install --only=production
 npm audit fix
 sudo npm start
@@ -203,7 +218,7 @@ popd
 
 ynh_add_systemd_config
 systemctl enable $app.service
-#systemctl enable --now wings
+systemctl enable wings.service
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL

@@ -14,8 +14,20 @@ Pterodactyl Panel
  1. App can be installed by YunoHost **admin web-interface** or by **running following command**:
 
          $ sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh
- 1. Admin username is : **root**.
-
+         
+         After install :
+         
+         1. Login in panel
+         2. Create Location
+         3. Create Node
+         4. Copy configuration node for the core.json
+         5. Edit the core.json
+         $ sudo nano /srv/daemon/config/core.json
+         6. For SSL change folder location for SSL Certificate & SSL Key
+         $ /etc/yunohost/certs/yourDomain.tld/crt.pem = SSL Certificate
+         $ /etc/yunohost/certs/yourDomain.tld/key.pem = SSL Key
+         7. Start wings service
+         $ sudo systemctl start wings
  
 ### Upgrade this package:
 
