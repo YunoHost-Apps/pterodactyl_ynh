@@ -89,18 +89,8 @@ ynh_app_setting_set $app port $port
 #==============================================
 
 ## Install the PHP 7.2 repo for debian
-ynh_package_install ca-certificates apt-transport-https
-wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
-echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
-
-## Get apt updates
-ynh_package_update
-ynh_package_install libargon2-1 libsodium23 libzip5 memcached php-igbinary php-memcached php-msgpack php-xdebug php7.2 php7.2-bcmath php7.2-cli php7.2-common php7.2-curl php7.2-fpm php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-opcache php7.2-readline php7.2-xml php7.2-zip
-
-
-## Start php7
-systemctl enable php7.2-fpm
-systemctl start php7.2-fpm
+ynh_print_info "Installing php7.3..."
+ynh_install_php --phpversion=7.3
 
 #=================================================
 # CREATE A MYSQL DATABASE
@@ -126,6 +116,14 @@ ynh_setup_source "$final_path"
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
+
+#=================================================
+# PHP-FPM CONFIGURATION
+#=================================================
+ynh_print_info "Configuring php-fpm..."
+
+# Create a dedicated php-fpm config
+ynh_add_fpm_config --phpversion=7.3
 
 #=================================================
 # CREATE DEDICATED USER
@@ -190,36 +188,6 @@ php artisan p:user:make --name-first $admin --name-last $admin --username $admin
 php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
 php artisan migrate --seed --force
 popd
-
-#==============================================
-# Install wings
-#==============================================
-
-ynh_package_install apt-transport-https ca-certificates curl gnupg2 software-properties-common zip unzip tar make gcc g++ python curl gnupg
-curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-ynh_package_update
-ynh_package_install docker-ce
-cp -a ../conf/daemon.json /etc/docker/daemon.json
-systemctl enable docker
-systemctl start docker
-mkdir -p /srv/daemon /srv/daemon-data
-pushd /srv/daemon
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-ynh_package_install nodejs make gcc g++
-curl -L https://github.com/pterodactyl/daemon/releases/download/v0.6.11/daemon.tar.gz | tar --strip-components=1 -xzv
-npm install --only=production
-npm audit fix
-sudo npm start
-popd
-
-#=================================================
-# SETUP SYSTEMD
-#=================================================
-
-ynh_add_systemd_config
-systemctl enable $app.service
-systemctl enable wings.service
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
