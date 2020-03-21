@@ -13,13 +13,13 @@ Pterodactyl Panel
 
  App can be installed by YunoHost **admin web-interface** or by **running following command**:
 
-         $ sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh
+         $ sudo yunohost app install https://github.com/aeris-studio/pterodactyl_ynh
          
  After install you'll be able to login into the panel, add a location and a node before starting installing some servers.
  
 ### Upgrade this package:
 
-        $ sudo yunohost app upgrade pterodactyl -u https://github.com/YunoHost-Apps/pterodactyl_ynh
+        $ sudo yunohost app upgrade pterodactyl -u https://github.com/aeris-studio/pterodactyl_ynh
 
 ### Configuring the daemon
 
