@@ -1,5 +1,6 @@
 # Pterodactyl app for YunoHost
 Pterodactyl Panel
+
 This package is based on liberodark pterodactyl package (https://github.com/YunoHost-Apps/pterodactyl_ynh) which seems old and unmaintained.
 
 - [Yunohost project](https://yunohost.org)
