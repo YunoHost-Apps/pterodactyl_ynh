@@ -15,7 +15,7 @@ Pterodactyl Panel
 
          $ sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh
          
-         After install you'll be able to login into the panel, add a location and a node before starting installing some servers.
+ After install you'll be able to login into the panel, add a location and a node before starting installing some servers.
  
 ### Upgrade this package:
 
