@@ -22,36 +22,26 @@ ynh_app_setting_set $app final_path $final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source "$final_path"
 
-#==============================================
-# INSTALL PLEX
-#==============================================
-
-dpkg --install $final_path/emby-server-deb*
-
 #=================================================
-# NGINX CONFIGURATION
+# COMPOSER DEPENDENCIES
 #=================================================
 
-# Create a dedicated nginx config
-#ynh_add_nginx_config
+# Update composer dependencies
+composer install --no-dev --optimize-autoloader
 
 
 #=================================================
-# UPGRADE CONFIG
+# ARTISAN ACTIONS
 #=================================================
-#cp -a ../conf/loolwsd.xml /etc/loolwsd
-#ynh_replace_string "__NEXTCLOUDDOMAIN__" "$nextcloud_domain" "/etc/loolwsd/loolwsd.xml"
-#ynh_replace_string "__PASSWORD__" "$password" "/etc/loolwsd/loolwsd.xml"
-#systemctl restart loolwsd
 
+php artisan view:clear
+php artisan config:clear
 
+php artisan migrate --force
+php artisan db:seed --force
 
-# If app is public, add url to SSOWat conf as skipped_uris
-#if [[ $is_public -eq 1 ]]; then
-  # See install script
-#  ynh_app_setting_set "$app" unprotected_uris "/"
-#fi
+chown -R www-data:www-data * 
 
-# Reload nginx service
-systemctl restart plexmediaserver
+# Reload queue runner
+systemctl restart $app.service
 
