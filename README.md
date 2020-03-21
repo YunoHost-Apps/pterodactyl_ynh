@@ -1,5 +1,6 @@
 # Pterodactyl app for YunoHost
 Pterodactyl Panel
+This package is based on liberodark pterodactyl package (https://github.com/YunoHost-Apps/pterodactyl_ynh) which seems old and unmaintained.
 
 - [Yunohost project](https://yunohost.org)
 - [Pterodactyl website](https://pterodactyl.io/)
@@ -28,6 +29,7 @@ You will need to install some daemons for the panel to work, you can install dae
  - on the same machine as the panel (using pterodaemon_ynh package (soon...))
  - on another machine running Yunohost (using pterodaemon_ynh package (soon...))
  - on another machine which doesn't run Yunohost (follow the official Pterodactyl documentation)
+
 In order to let the daemon communicate with the panel, you will need to open a port, the installer automatically opens a port for you, you can know which port is opened by running :
 
          $ sudo yunohost app setting pterodactyl port
