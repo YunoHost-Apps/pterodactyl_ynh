@@ -15,21 +15,22 @@ Pterodactyl Panel
 
          $ sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh
          
-         After install :
-         
-         1. Login in panel
-         2. Create Location
-         3. Create Node
-         4. Copy configuration node for the core.json
-         5. Edit the core.json
-         $ sudo nano /srv/daemon/config/core.json
-         6. For SSL change folder location for SSL Certificate & SSL Key
-         $ /etc/yunohost/certs/yourDomain.tld/crt.pem = SSL Certificate
-         $ /etc/yunohost/certs/yourDomain.tld/key.pem = SSL Key
-         7. Start wings service
-         $ sudo systemctl start wings
+         After install you'll be able to login into the panel, add a location and a node before starting installing some servers.
  
 ### Upgrade this package:
 
         $ sudo yunohost app upgrade pterodactyl -u https://github.com/YunoHost-Apps/pterodactyl_ynh
+
+### Configuring the daemon
+
+This panel needs some daemon in order to work properly, Pterodactyl is a panel who let you manage "nodes" which runs daemons.
+You will need to install some daemons for the panel to work, you can install daemons :
+ - on the same machine as the panel (using pterodaemon_ynh package (soon...))
+ - on another machine running Yunohost (using pterodaemon_ynh package (soon...))
+ - on another machine which doesn't run Yunohost (follow the official Pterodactyl documentation)
+In order to let the daemon communicate with the panel, you will need to open a port, the installer automatically opens a port for you, you can know which port is opened by running :
+
+         $ sudo yunohost app pterodactyl key port
+
+In the case you want to connect more than one daemon, you will need to open a port for each daemon connected.
 
