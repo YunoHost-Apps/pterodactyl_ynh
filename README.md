@@ -6,12 +6,27 @@ Pterodactyl Panel
 
 ![](https://camo.githubusercontent.com/16f7dd2ec822cd42dc42f7e193d3fa2652c26e45/68747470733a2f2f63646e2e707465726f64616374796c2e696f2f6c6f676f732f42616e6e65722532304c6f676f253230426c61636b4032782e706e67)
 
-
+[![Integration level](https://dash.yunohost.org/integration/REPLACEBYYOURAPP.svg)](https://dash.yunohost.org/appci/app/pterodactyl)  
 [![Install Pterodactyl with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=pterodactyl)
+
+> *This package allow you to install Pterodactyl quickly and simply on a YunoHost server.  
+If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
+
+
+**Shipped version:** 1.0
+
+## Screenshots
+
+![](https://pterodactyl.io/frontpage/mockup-macbook-grey.png)
+
+## Demo
+
+* [Pterodactyl demo](https://demo.pterodactyl.io/)
+Please note this is the official Pterodactyl demo, this demo is **not** hosted on a Yunohost server.
 
 ### Installing guide
 
- App can be installed by YunoHost **admin web-interface** or by **running following command**:
+ This app can be installed by YunoHost **admin web-interface** or by **running following command**:
 
          $ sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh
          
@@ -33,3 +48,43 @@ Pterodactyl Panel
 
         $ sudo yunohost app upgrade pterodactyl -u https://github.com/YunoHost-Apps/pterodactyl_ynh
 
+## Documentation
+
+ * Official documentation: Link to the official documentation of this app
+ * YunoHost documentation: If specific documentation is needed, feel free to contribute.
+
+## YunoHost specific features
+
+#### Multi-users support
+
+As Pterodactyl do not support LDAP for now [#594](https://github.com/pterodactyl/panel/issues/594), this app will not be synced with Yunohost users.
+
+#### Supported architectures
+
+* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/pterodactyl%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/pterodactyl/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/pterodactyl%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/pterodactyl/)
+
+## Limitations
+
+* LDAP not working by now
+* You'll need to manually open some ports if you want to have more than one daemon running.
+
+## Links
+
+ * Report a bug: https://github.com/YunoHost-Apps/pterodactyl_ynh/issues
+ * App website: https://pterodactyl.io
+ * Upstream app repository: https://github.com/pterodactyl/
+ * YunoHost website: https://yunohost.org/
+
+---
+
+Developers info
+----------------
+Please do your pull request to the [testing branch](https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing).
+
+To try the testing branch, please proceed like that.
+```
+sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing --debug
+or
+sudo yunohost app upgrade REPLACEBYYOURAPP -u https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing --debug
+```
