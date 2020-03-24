@@ -9,11 +9,13 @@ Pterodactyl Panel
 [![Integration level](https://dash.yunohost.org/integration/REPLACEBYYOURAPP.svg)](https://dash.yunohost.org/appci/app/pterodactyl)  
 [![Install Pterodactyl with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=pterodactyl)
 
+*[Lire ce readme en français.](./README_fr.md)*
+
 > *This package allow you to install Pterodactyl quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
 
 
-**Shipped version:** 1.0
+**Shipped version:** 0.7.12
 
 ## Screenshots
 
@@ -86,5 +88,5 @@ To try the testing branch, please proceed like that.
 ```
 sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing --debug
 or
-sudo yunohost app upgrade REPLACEBYYOURAPP -u https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing --debug
+sudo yunohost app upgrade pterodactyl -u https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing --debug
 ```
