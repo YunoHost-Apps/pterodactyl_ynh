@@ -82,11 +82,11 @@ As Pterodactyl do not support LDAP for now [#594](https://github.com/pterodactyl
 
 Developers info
 ----------------
-Please do your pull request to the [testing branch](https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing).
+Please do your pull request to the [develop branch](https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/develop).
 
 To try the testing branch, please proceed like that.
 ```
-sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing --debug
+sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/develop --debug
 or
-sudo yunohost app upgrade pterodactyl -u https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing --debug
+sudo yunohost app upgrade pterodactyl -u https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/develop --debug
 ```
