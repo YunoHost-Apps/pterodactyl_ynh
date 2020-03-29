@@ -1,20 +1,20 @@
-{
+
     "name": "Pterodactyl",
     "id": "pterodactyl",
     "packaging_format": 1,
     "description": {
-        "en": "Pterodactyl package for YunoHost.",
-        "fr": "Pterodactyl pour YunoHost."
+        "en": "Pterodactyl is a gameserver management panel (Minecraft, ARK, Rust,...)",
+        "fr": "Pterodactyl est un panel de gestion de serveurs de jeux (Minecraft, ARK, Rust,...)"
     },
-    "version": "0.7.11",
+    "version": "0.7.17",
     "url": "https://pterodactyl.io/",
     "license": "free",
     "maintainer": {
-        "name": "liberodark",
-        "email": "liberodark@gmail.com"
+        "name": "Aeris",
+        "email": "aeris@e.email"
     },
     "requirements": {
-        "yunohost": ">= 2.7.2"
+        "yunohost": ">= 3.5"
     },
     "multi_instance": true,
     "services": [
@@ -37,8 +37,8 @@
                 "name": "path",
                 "type": "path",
                 "ask": {
-                    "en": "Choose a path for Pterodactyl only /pterodactyl is accepted",
-                    "fr": "Choisissez un chemin pour Pterodactyl uniquement /pterodactyl est accepté"
+                    "en": "Choose a path for Pterodactyl. For now, only /pterodactyl is accepted",
+                    "fr": "Choisissez un chemin pour Pterodactyl. Pour l'instant seulement /pterodactyl est accepté"
                 },
                 "example": "/pterodactyl",
                 "default": "/pterodactyl"
