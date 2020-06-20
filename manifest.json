@@ -3,23 +3,23 @@
     "id": "pterodactyl",
     "packaging_format": 1,
     "description": {
-        "en": "Pterodactyl is a gameserver management panel (Minecraft, ARK, Rust,...)",
-        "fr": "Pterodactyl est un panel de gestion de serveurs de jeux (Minecraft, ARK, Rust,...)"
+        "en": "Gameserver management panel (Minecraft, ARK, Rust,...)",
+        "fr": "Panel de gestion de serveurs de jeux (Minecraft, ARK, Rust,...)"
     },
-    "version": "0.7.17",
+    "version": "0.7.17~ynh",
     "url": "https://pterodactyl.io/",
-    "license": "free",
+    "license": "MIT",
     "maintainer": {
         "name": "Aeris",
         "email": "aeris@e.email"
     },
     "requirements": {
-        "yunohost": ">= 3.5"
+        "yunohost": ">= 3.8.1"
     },
     "multi_instance": true,
     "services": [
         "nginx",
-        "php5-fpm",
+        "php7-fpm",
         "mysql"
     ],
     "arguments": {
@@ -32,7 +32,6 @@
                 },
                 "example": "example.com"
             },
-
             {
                 "name": "path",
                 "type": "path",
@@ -43,7 +42,6 @@
                 "example": "/pterodactyl",
                 "default": "/pterodactyl"
             },
-
             {
                 "name": "admin",
                 "type": "user",
@@ -53,7 +51,6 @@
                 },
                 "example": "johndoe"
             },
-            
             {
                 "name": "password",
                 "type": "password",
@@ -63,15 +60,14 @@
                 },
                 "example": "Choose a password"
             },
-
             {
                 "name": "is_public",
                 "type": "boolean",
                 "ask": {
-                    "en": "Is it a public site ?",
+                    "en": "Is it a public site?",
                     "fr": "Est-ce un site public ?"
                 },
-                "default": "true"
+                "default": true
             }
           
         ]
