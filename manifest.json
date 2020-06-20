@@ -6,7 +6,7 @@
         "en": "Gameserver management panel (Minecraft, ARK, Rust,...)",
         "fr": "Panel de gestion de serveurs de jeux (Minecraft, ARK, Rust,...)"
     },
-    "version": "0.7.17~ynh",
+    "version": "0.7.17~ynh1",
     "url": "https://pterodactyl.io/",
     "license": "MIT",
     "maintainer": {
