@@ -31,26 +31,16 @@ admin=$YNH_APP_ARG_ADMIN
 is_public=$YNH_APP_ARG_IS_PUBLIC
 password=$YNH_APP_ARG_PASSWORD
 
-### If it's a multi-instance app, meaning it can be installed several times independently
-### The id of the app as stated in the manifest is available as $YNH_APP_ID
-### The instance number is available as $YNH_APP_INSTANCE_NUMBER (equals "1", "2", ...)
-### The app instance name is available as $YNH_APP_INSTANCE_NAME
-###    - the first time the app is installed, YNH_APP_INSTANCE_NAME = ynhexample
-###    - the second time the app is installed, YNH_APP_INSTANCE_NAME = ynhexample__2
-###    - ynhexample__{N} for the subsequent installations, with N=3,4, ...
-### The app instance name is probably what interests you most, since this is
-### guaranteed to be unique. This is a good unique identifier to define installation path,
-### db names, ...
 app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 
-### If the app uses nginx as web server (written in HTML/PHP in most cases), the final path should be "/var/www/$app".
-### If the app provides an internal web server (or uses another application server such as uwsgi), the final path should be "/opt/yunohost/$app"
+ynh_script_progression --message="Validating installation parameters..." --weight=1
+
 final_path=/var/www/$app
-test ! -e "$final_path" || ynh_die "This path already contains a folder"
+test ! -e "$final_path" || ynh_die "Seems like $final_path already exist. Aborting."
 
 # Normalize the url path syntax
 path_url=$(ynh_normalize_url_path $path_url)
@@ -73,11 +63,6 @@ ynh_app_setting_set $app is_public $is_public
 # FIND AND OPEN A PORT
 #=================================================
 
-### Use these lines if you have to open a port for the application
-### `ynh_find_port` will find the first available port starting from the given port.
-### If you're not using these lines:
-###		- Remove the section "CLOSE A PORT" in the remove script
-
 # Find a free port
 port=$(ynh_find_port 8080)
 # Open this port
@@ -88,17 +73,15 @@ ynh_app_setting_set $app port $port
 # INSTALL DEPS
 #==============================================
 
-## Install the PHP 7.2 repo for debian
-ynh_package_install ca-certificates apt-transport-https
-wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
-echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
+## Install PHP 7.2
+ynh_install_php --phpversion=7.2
 
 ## Get apt updates
 ynh_package_update
 ynh_package_install libargon2-1 libsodium23 libzip5 memcached php-igbinary php-memcached php-msgpack php-xdebug php7.2 php7.2-bcmath php7.2-cli php7.2-common php7.2-curl php7.2-fpm php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-opcache php7.2-readline php7.2-xml php7.2-zip
 
 
-## Start php7
+## Start php7.2
 systemctl enable php7.2-fpm
 systemctl start php7.2-fpm
 
@@ -142,7 +125,7 @@ ynh_system_user_create $app
 email=$(ynh_user_get_info $admin 'mail')
 
 # setup application config
-cp -a ../conf/.env.example $final_path/.env
+cp -a ../conf/.env $final_path/.env
 cp -a ../conf/wings.service /etc/systemd/system/wings.service
 
 #=================================================
@@ -150,27 +133,21 @@ cp -a ../conf/wings.service /etc/systemd/system/wings.service
 #=================================================
 
 #ynh_replace_string "random_key" "$random_key" "$final_path/.env"
-ynh_replace_string "yunouser"   "$db_name"    "$final_path/.env"
-ynh_replace_string "yunopass"   "$db_pwd"     "$final_path/.env"
-ynh_replace_string "yunobase"   "$db_name"    "$final_path/.env"
-ynh_replace_string "yunomail"   "$email"      "$final_path/.env"
-ynh_replace_string "yunodomain" "$domain"     "$final_path/.env"
+ynh_replace_string "__DB_USER__"   "$db_name"    "$final_path/.env"
+ynh_replace_string "__DB_PASS__"   "$db_pwd"     "$final_path/.env"
+ynh_replace_string "__DB_NAME__"   "$db_name"    "$final_path/.env"
+#ynh_replace_string "yunomail"   "$email"      "$final_path/.env"
+#ynh_replace_string "yunodomain" "$domain"     "$final_path/.env"
 
 #==============================================
 # INSTALL Composer
 #==============================================
 
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php composer-setup.php --install-dir=/usr/bin --filename=composer
-php -r "unlink('composer-setup.php');"
+ynh_install_composer
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-
-### `ynh_setup_source` is used to install an app from a zip or tar.gz file,
-### downloaded from an upstream source, like a git repository.
-### `ynh_setup_source` use the file conf/app.src
 
 ynh_app_setting_set $app final_path $final_path
 # Download, check integrity, uncompress and patch the source from app.src
@@ -192,7 +169,7 @@ php artisan migrate --seed --force
 popd
 
 #==============================================
-# Install wings
+# Install Docker
 #==============================================
 
 ynh_package_install apt-transport-https ca-certificates curl gnupg2 software-properties-common zip unzip tar make gcc g++ python curl gnupg
@@ -203,14 +180,26 @@ ynh_package_install docker-ce
 cp -a ../conf/daemon.json /etc/docker/daemon.json
 systemctl enable docker
 systemctl start docker
+
+#==============================================
+# Install Daemon
+#==============================================
+
 mkdir -p /srv/daemon /srv/daemon-data
 pushd /srv/daemon
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-ynh_package_install nodejs make gcc g++
-curl -L https://github.com/pterodactyl/daemon/releases/download/v0.6.11/daemon.tar.gz | tar --strip-components=1 -xzv
+
+ynh_install_nodejs --nodejs_version=10
+
+ynh_package_install make gcc g++
+
+ynh_setup_source --dest_dir=/srv/daemon --source_id=daemon.src
 npm install --only=production
-npm audit fix
-sudo npm start
+
+#C'est bien dit dans la doc, ne surtout pas utiliser npm audit fix -_-
+#npm audit fix
+# Ne pas le démarrer ! La config est pas faite et si jamais on le démarre il sera en double avec le systemd.
+#sudo npm start
+
 popd
 
 #=================================================
@@ -228,12 +217,13 @@ systemctl enable wings.service
 mkdir -p /var/log/pterodactyl/
 touch /var/log/$app/$app-prod.log
 yunohost service add $app --log "/var/log/$app/$app-prod.log"
+yunohost service add wings
 
 #==============================================
 # Cron
 #==============================================
 
-crontab -l | { cat; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run" ; } | crontab -
+crontab -l | { cat; echo "* * * * * php $final_path/artisan schedule:run" ; } | crontab -
 
 #=================================================
 # GENERIC FINALIZATION

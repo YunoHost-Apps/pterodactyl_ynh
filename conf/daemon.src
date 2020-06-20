@@ -1,0 +1,5 @@
+SOURCE_URL=https://github.com/pterodactyl/daemon/releases/download/v0.6.13/daemon.tar.gz
+SOURCE_SUM=836ad8946a270df012c00d2ad504fff6705dc536696c52f6cf72002f22c692b0
+SOURCE_SUM_PRG=sha256sum
+SOURCE_FORMAT=tar.gz
+SOURCE_IN_SUBDIR=true
