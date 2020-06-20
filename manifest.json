@@ -6,7 +6,7 @@
         "en": "Pterodactyl is a gameserver management panel (Minecraft, ARK, Rust,...)",
         "fr": "Pterodactyl est un panel de gestion de serveurs de jeux (Minecraft, ARK, Rust,...)"
     },
-    "version": "0.7.17",
+    "version": "0.7.17~ynh",
     "url": "https://pterodactyl.io/",
     "license": "free",
     "maintainer": {
@@ -19,7 +19,7 @@
     "multi_instance": true,
     "services": [
         "nginx",
-        "php5-fpm",
+        "php7-fpm",
         "mysql"
     ],
     "arguments": {
@@ -68,10 +68,10 @@
                 "name": "is_public",
                 "type": "boolean",
                 "ask": {
-                    "en": "Is it a public site ?",
+                    "en": "Is it a public site?",
                     "fr": "Est-ce un site public ?"
                 },
-                "default": "true"
+                "default": true
             }
           
         ]
