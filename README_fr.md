@@ -1,21 +1,15 @@
-# Application Pterodactyl pour Yunohost
-Pterodactyl Panel
+# Pterodactyl Panel pour Yunohost
 
-- [Projet YunoHost](https://yunohost.org)
-- [Site Web Pterodactyl](https://pterodactyl.io/)
+![](https://ci-apps.yunohost.org/ci/badges/pterodactyl.maintain.svg) ![](https://ci-apps.yunohost.org/ci/badges/pterodactyl.status.svg) [![Integration level](https://dash.yunohost.org/integration/pterodactyl.svg)](https://dash.yunohost.org/appci/app/pterodactyl)  
+[![Install Pterodactyl with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=pterodactyl)
 
-![](https://camo.githubusercontent.com/16f7dd2ec822cd42dc42f7e193d3fa2652c26e45/68747470733a2f2f63646e2e707465726f64616374796c2e696f2f6c6f676f732f42616e6e65722532304c6f676f253230426c61636b4032782e706e67)
-
-[![Integration level](https://dash.yunohost.org/integration/REPLACEBYYOURAPP.svg)](https://dash.yunohost.org/appci/app/pterodactyl)  
-[![Installer Pterodactyl Avec Yunohost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=pterodactyl)
-
-*[Read this readme in english.](./README.md)* 
+*[Read this README in English.](./README.md)*
 
 > *Ce package vous permet d'installer REPLACEBYYOURAPP rapidement et simplement sur un serveur Yunohost.  
 Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
 
 
-**Version de Pterodactyl** : 0.7.12
+**Version de Pterodactyl** : 0.7.17
 
 ## Screenshots
 
@@ -24,7 +18,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 ## Demo
 
 * [Pterodactyl demo](https://demo.pterodactyl.io/)
-Merci de noter qu'il s'agit de la démo officielle de Pterodactyl, elle n'est pas hébergée sur un serveur YunoHost
+Merci de noter qu'il s'agit de la démo officielle de Pterodactyl, elle n'est **pas** hébergée sur un serveur YunoHost
 
 ### Installing guide
 
@@ -32,20 +26,21 @@ Merci de noter qu'il s'agit de la démo officielle de Pterodactyl, elle n'est pa
 
          $ sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh
          
-         Après l'installation:
+
+Après l'installation:
          
-         1. Connectez-vous au panel
-         2. Créez une location
-         3. Créez un node
-         4. Copiez la configuration (core.json) pour le node créé en 3.
-         5. Modifiez core.json
-         $ sudo nano /srv/daemon/config/core.json
-         6. Modifiez les chemins des certificats SSL Yunohost.
-         $ /etc/yunohost/certs/yourDomain.tld/crt.pem = SSL Certificate
-         $ /etc/yunohost/certs/yourDomain.tld/key.pem = SSL Key
-         7. Démarrez le service Wings
-         $ sudo systemctl start wings
- 
+1. Connectez-vous au panel
+    2. Créez une location
+    3. Créez un node
+    4. Copiez la configuration (core.json) pour le node créé en 3.
+    5. Modifiez core.json
+        ```$ sudo nano /srv/daemon/config/core.json```
+    6. Modifiez les chemins des certificats SSL Yunohost.
+         ```$ /etc/yunohost/certs/yourDomain.tld/crt.pem = SSL Certificate
+         $ /etc/yunohost/certs/yourDomain.tld/key.pem = SSL Key```
+    7. Démarrez le service Wings
+         ```$ sudo systemctl start wings```
+         
 ### Mettre à jour:
 
         $ sudo yunohost app upgrade pterodactyl -u https://github.com/YunoHost-Apps/pterodactyl_ynh
@@ -81,7 +76,7 @@ Pterodactyl ne supporte pas le LDAP pour l'instant [#594](https://github.com/pte
 
 Developers info
 ----------------
-Merci de faire vos PR sur la branche [develop](https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/develop).
+Merci de faire vos PR sur la branche [testing](https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing).
 
 Pour essayer la branche testing, effectuez ces commandes :
 ```

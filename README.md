@@ -11,7 +11,7 @@ If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to
 ## Overview
 Pterodactyl is the open-source game server management panel built with PHP7, Nodejs, and Go. Designed with security in mind, Pterodactyl runs all game servers in isolated Docker containers while exposing a beautiful and intuitive UI to administrators and users. Stop wasting time fiddling with other systems — make game servers a first class citizen on your platform.
 
-**Shipped version:** 0.7.12
+**Shipped version:** 0.7.17
 
 ## Screenshots
 
@@ -78,7 +78,7 @@ As Pterodactyl do not support LDAP for now [#594](https://github.com/pterodactyl
 
 Developers info
 ----------------
-Please do your pull request to the [develop branch](https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/develop).
+Please do your pull request to the [testing branch](https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing).
 
 To try the testing branch, please proceed like that.
 ```
