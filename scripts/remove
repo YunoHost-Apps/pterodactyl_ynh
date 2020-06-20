@@ -30,6 +30,7 @@ db_user=$db_name
 
 # Remove the dedicated systemd config
 ynh_remove_systemd_config
+ynh_remove_systemd_config --service=wings
 
 #=================================================
 # REMOVE SERVICE FROM ADMIN PANEL
@@ -41,7 +42,11 @@ then
 	echo "Remove $app service"
 	yunohost service remove $app
 fi
-
+if yunohost service status wings
+then
+	echo "Remove wings service"
+	yunohost service remove wings
+fi
 #=================================================
 # REMOVE THE MYSQL DATABASE
 #=================================================
@@ -55,6 +60,7 @@ ynh_mysql_remove_db $db_user $db_name
 
 # Remove the app directory securely
 ynh_secure_remove "$final_path"
+ynh_secure_remove "/srv/daemon"
 
 #=================================================
 # REMOVE NGINX CONFIGURATION
