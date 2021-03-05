@@ -30,102 +30,87 @@ path_url=$YNH_APP_ARG_PATH
 admin=$YNH_APP_ARG_ADMIN
 is_public=$YNH_APP_ARG_IS_PUBLIC
 password=$YNH_APP_ARG_PASSWORD
+email=$(ynh_user_get_info --username=$admin --key=mail)
 
 app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-
-ynh_script_progression --message="Validating installation parameters..." --weight=1
+ynh_script_progression --message="Validating installation parameters..." --time --weight=1
 
 final_path=/var/www/$app
-test ! -e "$final_path" || ynh_die "Seems like $final_path already exist. Aborting."
+test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
-# Normalize the url path syntax
-path_url=$(ynh_normalize_url_path $path_url)
-
-# Check web path availability
-ynh_webpath_available $domain $path_url
 # Register (book) web path
-ynh_webpath_register $app $domain $path_url
+ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
 
-ynh_app_setting_set $app domain $domain
-ynh_app_setting_set $app path $path_url
-ynh_app_setting_set $app admin $admin
-ynh_app_setting_set $app is_public $is_public
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=path --value=$path_url
+ynh_app_setting_set --app=$app --key=admin --value=$admin
 
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
+ynh_script_progression --message="Finding an available port..." --weight=1
 
-# Find a free port
-port=$(ynh_find_port 8080)
-# Open this port
-yunohost firewall allow --no-upnp TCP $port 2>&1
-ynh_app_setting_set $app port $port
+# Find an available port
+port=$(ynh_find_port --port=8080)
+ynh_app_setting_set --app=$app --key=port --value=$port
 
-#==============================================
-# INSTALL DEPS
-#==============================================
+#=================================================
+# INSTALL DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Installing dependencies..." --weight=1
 
-## Install PHP 7.2
-ynh_install_php --phpversion=7.2
-
-## Get apt updates
-ynh_package_update
-ynh_package_install libargon2-1 libsodium23 libzip5 memcached php-igbinary php-memcached php-msgpack php-xdebug php7.2 php7.2-bcmath php7.2-cli php7.2-common php7.2-curl php7.2-fpm php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-opcache php7.2-readline php7.2-xml php7.2-zip
-
-
-## Start php7.2
-systemctl enable php7.2-fpm
-systemctl start php7.2-fpm
+ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
 # CREATE A MYSQL DATABASE
 #=================================================
-# If your app uses a MySQL database, you can use these lines to bootstrap
-# a database, an associated user and save the password in app settings
+ynh_script_progression --message="Creating a MySQL database..." --weight=1
 
-db_name=$(ynh_sanitize_dbid $app)
-ynh_app_setting_set $app db_name $db_name
-ynh_mysql_setup_db $db_name $db_name
+db_name=$(ynh_sanitize_dbid --db_name=$app)
+db_user=$db_name
+ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression --message="Setting up source files..." --weight=1
 
-ynh_app_setting_set $app final_path $final_path
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source "$final_path"
+ynh_setup_source --dest_dir="$final_path"
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_script_progression --message="Configuring NGINX web server..." --time --weight=1
 
-# Create a dedicated nginx config
+# Create a dedicated NGINX config
 ynh_add_nginx_config
 
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
+ynh_script_progression --message="Configuring system user..." --time --weight=1
 
 # Create a system user
-ynh_system_user_create $app
+ynh_system_user_create --username=$app
 
 #=================================================
 # SPECIFIC SETUP
 #=================================================
 
-# create a user
-email=$(ynh_user_get_info $admin 'mail')
-
 # setup application config
 cp -a ../conf/.env $final_path/.env
+
 cp -a ../conf/wings.service /etc/systemd/system/wings.service
 
 #=================================================
@@ -145,27 +130,19 @@ ynh_replace_string "__DB_NAME__"   "$db_name"    "$final_path/.env"
 
 ynh_install_composer
 
-#=================================================
-# DOWNLOAD, CHECK AND UNPACK SOURCE
-#=================================================
-
-ynh_app_setting_set $app final_path $final_path
-# Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source "$final_path"
-
 #==============================================
 # Install Pterodactyl
 #==============================================
 
 pushd $final_path
-chmod -R 755 storage/* bootstrap/cache
-composer install --no-progress
-php artisan key:generate --force
-php artisan migrate --force
-php artisan db:seed --force
-php artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
-php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
-php artisan migrate --seed --force
+	chmod -R 755 storage/* bootstrap/cache
+	composer install --no-progress
+	php artisan key:generate --force
+	php artisan migrate --force
+	php artisan db:seed --force
+	php artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
+	php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
+	php artisan migrate --seed --force
 popd
 
 #==============================================
@@ -237,16 +214,25 @@ chown -R www-data:www-data $final_path
 #=================================================
 # SETUP SSOWAT
 #=================================================
+ynh_script_progression --message="Configuring permissions..." --time --weight=1
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-	# unprotected_uris allows SSO credentials to be passed anyway.
-	ynh_app_setting_set $app unprotected_uris "/"
+	# Everyone can access the app.
+	# The "main" permission is automatically created before the install script.
+	ynh_permission_update --permission="main" --add="visitors"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_script_progression --message="Reloading NGINX web server..." --time --weight=1
 
-systemctl reload nginx
+ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Installation of $app completed" --time --last
