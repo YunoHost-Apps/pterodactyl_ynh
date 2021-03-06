@@ -119,7 +119,7 @@ cp -a ../conf/wings.service /etc/systemd/system/wings.service
 
 #ynh_replace_string "random_key" "$random_key" "$final_path/.env"
 ynh_replace_string "__DB_USER__"   "$db_name"    "$final_path/.env"
-ynh_replace_string "__DB_PASS__"   "$db_pwd"     "$final_path/.env"
+ynh_replace_string "__DB_PWD_"   "$db_pwd"     "$final_path/.env"
 ynh_replace_string "__DB_NAME__"   "$db_name"    "$final_path/.env"
 #ynh_replace_string "yunomail"   "$email"      "$final_path/.env"
 #ynh_replace_string "yunodomain" "$domain"     "$final_path/.env"
