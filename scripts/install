@@ -169,8 +169,6 @@ systemctl start docker
 mkdir -p /srv/daemon /srv/daemon-data
 pushd /srv/daemon
 
-	ynh_package_install make gcc g++
-
 	ynh_setup_source --dest_dir=/srv/daemon --source_id=daemon.src
 	npm install --only=production
 

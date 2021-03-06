@@ -8,9 +8,9 @@ YNH_PHP_VERSION=7.3
 
 nodejs_version=14
 
-extra_php_dependencies="php${YNH_PHP_VERSION}-igbinary php${YNH_PHP_VERSION}-memcached php${YNH_PHP_VERSION}-msgpack php${YNH_PHP_VERSION}-xdebug php${YNH_PHP_VERSION}-bcmath php7.2-cli php${YNH_PHP_VERSION}-common php${YNH_PHP_VERSION}-curl php${YNH_PHP_VERSION}-fpm php${YNH_PHP_VERSION}-gd php${YNH_PHP_VERSION}-json php${YNH_PHP_VERSION}-mbstring php${YNH_PHP_VERSION}-mysql php${YNH_PHP_VERSION}-opcache php${YNH_PHP_VERSION}-readline php${YNH_PHP_VERSION}-xml php${YNH_PHP_VERSION}-zip"
+extra_php_dependencies="php${YNH_PHP_VERSION}-cli php${YNH_PHP_VERSION}-gd php${YNH_PHP_VERSION}-mysql php${YNH_PHP_VERSION}-pdo php${YNH_PHP_VERSION}-mbstring php${YNH_PHP_VERSION}-tokenizer php${YNH_PHP_VERSION}-bcmath php${YNH_PHP_VERSION}-xml php${YNH_PHP_VERSION}-curl php${YNH_PHP_VERSION}-zip"
 
-pkg_dependencies="libargon2-1 libsodium23 libzip5 memcached apt-transport-https ca-certificates curl gnupg2 software-properties-common zip unzip tar make gcc g++ python curl gnupg"
+pkg_dependencies="libargon2-1 libsodium23 libzip5 memcached apt-transport-https software-properties-common zip unzip tar make gcc g++"
 
 
 #=================================================
