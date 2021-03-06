@@ -1,15 +1,14 @@
 # See here for more informations
 # https://github.com/YunoHost/package_check#syntax-check_process-file
 
-# Move this file from check_process.default to check_process when you have filled it.
-
 ;; Test complet
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/pterodactyl"	(PATH)	
 		is_public=1	(PUBLIC|public=1|private=0)
+		language="fr"
 		password="pass"
-                admin="john"    (USER)
+        admin="john"    (USER)
 		port="9980"	(PORT)
 	; Checks
 		pkg_linter=1
@@ -26,3 +25,8 @@
 ;;; Options
 Email=
 Notification=none
+;;; Upgrade options
+	; commit=CommitHash
+		name=Name and date of the commit.
+		manifest_arg=domain=DOMAIN&path=PATH&admin=USER&language=fr&is_public=1&password=pass&port=666&
+

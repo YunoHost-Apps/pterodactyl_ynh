@@ -3,8 +3,8 @@ Description=Pterodactyl Wings Daemon
 After=docker.service
 
 [Service]
-User=root
-#Group=some_group
+User=__APP__
+#Group__APP__
 WorkingDirectory=/srv/daemon
 LimitNOFILE=4096
 PIDFile=/var/run/wings/daemon.pid

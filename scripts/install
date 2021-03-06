@@ -28,6 +28,7 @@ ynh_abort_if_errors
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 admin=$YNH_APP_ARG_ADMIN
+language=$YNH_APP_ARG_LANGUAGE
 is_public=$YNH_APP_ARG_IS_PUBLIC
 password=$YNH_APP_ARG_PASSWORD
 email=$(ynh_user_get_info --username=$admin --key=mail)
@@ -37,7 +38,7 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-ynh_script_progression --message="Validating installation parameters..." --time --weight=1
+ynh_script_progression --message="Validating installation parameters..." --weight=1
 
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
@@ -52,6 +53,7 @@ ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=admin --value=$admin
+ynh_app_setting_set --app=$app --key=language --value=$language
 
 #=================================================
 # FIND AND OPEN A PORT
@@ -66,6 +68,9 @@ ynh_app_setting_set --app=$app --key=port --value=$port
 # INSTALL DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Installing dependencies..." --weight=1
+
+# Install Nodejs
+ynh_exec_warn_less ynh_install_nodejs --nodejs_version=$nodejs_version
 
 ynh_install_app_dependencies $pkg_dependencies
 
@@ -91,7 +96,7 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring NGINX web server..." --time --weight=1
+ynh_script_progression --message="Configuring NGINX web server..." --weight=1
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
@@ -99,30 +104,26 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Configuring system user..." --time --weight=1
+ynh_script_progression --message="Configuring system user..." --weight=1
 
 # Create a system user
 ynh_system_user_create --username=$app
 
 #=================================================
-# SPECIFIC SETUP
+# PHP-FPM CONFIGURATION
 #=================================================
+ynh_script_progression --message="Configuring PHP-FPM..." --weight=1
 
-# setup application config
-cp -a ../conf/.env $final_path/.env
-
-cp -a ../conf/wings.service /etc/systemd/system/wings.service
+# Create a dedicated PHP-FPM config
+ynh_add_fpm_config
 
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
 
-#ynh_replace_string "random_key" "$random_key" "$final_path/.env"
-ynh_replace_string "__DB_USER__"   "$db_name"    "$final_path/.env"
-ynh_replace_string "__DB_PASS__"   "$db_pwd"     "$final_path/.env"
-ynh_replace_string "__DB_NAME__"   "$db_name"    "$final_path/.env"
-#ynh_replace_string "yunomail"   "$email"      "$final_path/.env"
-#ynh_replace_string "yunodomain" "$domain"     "$final_path/.env"
+ynh_add_config --template="../conf/.env" --destination="$final_path/.env"
+
+ynh_add_config --template="../conf/wings.service" --destination="/etc/systemd/system/wings.service"
 
 #==============================================
 # INSTALL Composer
@@ -136,26 +137,29 @@ ynh_install_composer
 
 pushd $final_path
 	chmod -R 755 storage/* bootstrap/cache
-	composer install --no-progress
+	#composer install --no-progress
+	composer install --no-dev --optimize-autoloader
 	php artisan key:generate --force
-	php artisan migrate --force
-	php artisan db:seed --force
-	php artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
-	php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
+	php artisan p:environment:setup
+	php artisan p:environment:database
 	php artisan migrate --seed --force
+	#php artisan migrate --force
+	#php artisan db:seed --force
+	php artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
+	#php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
+	#php artisan migrate --seed --force
 popd
 
 #==============================================
 # Install Docker
 #==============================================
 
-ynh_package_install apt-transport-https ca-certificates curl gnupg2 software-properties-common zip unzip tar make gcc g++ python curl gnupg
 curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
 ynh_package_update
 ynh_package_install docker-ce
 cp -a ../conf/daemon.json /etc/docker/daemon.json
-systemctl enable docker
+systemctl enable docker --quiet
 systemctl start docker
 
 #==============================================
@@ -165,12 +169,10 @@ systemctl start docker
 mkdir -p /srv/daemon /srv/daemon-data
 pushd /srv/daemon
 
-ynh_install_nodejs --nodejs_version=10
+	ynh_package_install make gcc g++
 
-ynh_package_install make gcc g++
-
-ynh_setup_source --dest_dir=/srv/daemon --source_id=daemon.src
-npm install --only=production
+	ynh_setup_source --dest_dir=/srv/daemon --source_id=daemon.src
+	npm install --only=production
 
 #C'est bien dit dans la doc, ne surtout pas utiliser npm audit fix -_-
 #npm audit fix
@@ -182,25 +184,41 @@ popd
 #=================================================
 # SETUP SYSTEMD
 #=================================================
+ynh_script_progression --message="Configuring a systemd service..." --weight=1
 
-ynh_add_systemd_config
-systemctl enable $app.service
-systemctl enable wings.service
-
-#=================================================
-# ADVERTISE SERVICE IN ADMIN PANEL
-#=================================================
-
-mkdir -p /var/log/pterodactyl/
+mkdir -p /var/log/$app/
 touch /var/log/$app/$app-prod.log
-yunohost service add $app --log "/var/log/$app/$app-prod.log"
-yunohost service add wings
 
-#==============================================
-# Cron
-#==============================================
+# Create a dedicated systemd config
+ynh_add_systemd_config
 
-crontab -l | { cat; echo "* * * * * php $final_path/artisan schedule:run" ; } | crontab -
+# Create systemd service for wings
+ynh_add_systemd_config --service=wings --template=wings.service
+
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Starting a systemd service..." --weight=1
+
+# Start a systemd service
+ynh_systemd_action --service_name=$app --action=start --log_path="/var/log/$app/$app.log"
+# Start a systemd service
+ynh_systemd_action --service_name=wings --action=start --log_path="/var/log/$app/$app.log"
+
+#=================================================
+# INTEGRATE SERVICE IN YUNOHOST
+#=================================================
+ynh_script_progression --message="Integrating service in YunoHost..." --weight=2
+
+yunohost service add $app --description="Pterodactyl Queue Worker" --log="/var/log/$app/$app-prod.log"
+yunohost service add wings --description="Pterodactyl Queue Worker" 
+
+#=================================================
+# SETUP A CRON
+#=================================================
+ynh_script_progression --message="Setuping a cron..."
+
+ynh_add_config --template="../conf/cron" --destination="/etc/cron.d/$app"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -209,25 +227,23 @@ crontab -l | { cat; echo "* * * * * php $final_path/artisan schedule:run" ; } | 
 #=================================================
 
 # Set permissions to app files
-chown -R www-data:www-data $final_path
+chown -R $app: $final_path
 
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring permissions..." --time --weight=1
+ynh_script_progression --message="Configuring permissions..." --weight=1
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-	# Everyone can access the app.
-	# The "main" permission is automatically created before the install script.
 	ynh_permission_update --permission="main" --add="visitors"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..." --time --weight=1
+ynh_script_progression --message="Reloading NGINX web server..." --weight=1
 
 ynh_systemd_action --service_name=nginx --action=reload
 
@@ -235,4 +251,4 @@ ynh_systemd_action --service_name=nginx --action=reload
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed" --time --last
+ynh_script_progression --message="Installation of $app completed" --last

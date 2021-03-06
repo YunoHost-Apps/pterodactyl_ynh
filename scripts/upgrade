@@ -56,6 +56,13 @@ if [ -z "$final_path" ]; then
 	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 fi
 
+# Cleaning legacy permissions
+if ynh_legacy_permissions_exists; then
+	ynh_legacy_permissions_delete_all
+
+	ynh_app_setting_delete --app=$app --key=is_public
+fi
+
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
@@ -77,7 +84,7 @@ ynh_abort_if_errors
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..." --time --weight=1
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app --action=stop --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -105,8 +112,8 @@ ynh_add_nginx_config
 ynh_script_progression --message="Upgrading dependencies..." --time --weight=1
 
 pushd $final_path
-chmod -R 755 storage/* bootstrap/cache
-composer install --no-dev --optimize-autoloader
+	chmod -R 755 storage/* bootstrap/cache
+	composer install --no-dev --optimize-autoloader
 popd
 
 #=================================================
@@ -132,10 +139,10 @@ ynh_add_fpm_config
 #=================================================
 
 pushd $final_path
-php artisan view:clear
-php artisan config:clear
-php artisan migrate --force
-php artisan db:seed --force
+	php artisan view:clear
+	php artisan config:clear
+	php artisan migrate --force
+	php artisan db:seed --force
 popd
 
 #=================================================
@@ -153,7 +160,7 @@ ynh_add_systemd_config
 #=================================================
 
 # Set permissions on app files
-chown -R root: $final_path
+chown -R $app: $final_path
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST

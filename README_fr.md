@@ -1,7 +1,7 @@
 # Pterodactyl Panel pour Yunohost
 
 ![](https://ci-apps.yunohost.org/ci/badges/pterodactyl.maintain.svg) ![](https://ci-apps.yunohost.org/ci/badges/pterodactyl.status.svg) [![Integration level](https://dash.yunohost.org/integration/pterodactyl.svg)](https://dash.yunohost.org/appci/app/pterodactyl)  
-[![Install Pterodactyl with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=pterodactyl)
+[![Install Pterodactyl with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=pterodactyl)
 
 *[Read this README in English.](./README.md)*
 
@@ -9,7 +9,7 @@
 Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
 
 
-**Version de Pterodactyl** : 0.7.17
+**Version de Pterodactyl** : 1.2.2
 
 ## Screenshots
 
@@ -34,12 +34,12 @@ Après l'installation:
     3. Créez un node
     4. Copiez la configuration (core.json) pour le node créé en 3.
     5. Modifiez core.json
-        ```$ sudo nano /srv/daemon/config/core.json```
+        `$ sudo nano /srv/daemon/config/core.json`
     6. Modifiez les chemins des certificats SSL Yunohost.
-         ```$ /etc/yunohost/certs/yourDomain.tld/crt.pem = SSL Certificate
-         $ /etc/yunohost/certs/yourDomain.tld/key.pem = SSL Key```
+         `$ /etc/yunohost/certs/yourDomain.tld/crt.pem = SSL Certificate
+         $ /etc/yunohost/certs/yourDomain.tld/key.pem = SSL Key`
     7. Démarrez le service Wings
-         ```$ sudo systemctl start wings```
+         `$ sudo systemctl start wings`
          
 ### Mettre à jour:
 
@@ -57,7 +57,7 @@ Pterodactyl ne supporte pas le LDAP pour l'instant [#594](https://github.com/pte
 
 #### Architectures supportées
 
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/pterodactyl%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/pterodactyl/)
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/pterodactyl%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/pterodactyl/)
 * ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/pterodactyl%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/pterodactyl/)
 
 ## Limitations
@@ -74,8 +74,8 @@ Pterodactyl ne supporte pas le LDAP pour l'instant [#594](https://github.com/pte
 
 ---
 
-Developers info
-----------------
+## Developers info
+
 Merci de faire vos PR sur la branche [testing](https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing).
 
 Pour essayer la branche testing, effectuez ces commandes :

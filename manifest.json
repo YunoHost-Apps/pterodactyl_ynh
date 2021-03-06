@@ -6,7 +6,7 @@
         "en": "Gameserver management panel (Minecraft, ARK, Rust,...)",
         "fr": "Panel de gestion de serveurs de jeux (Minecraft, ARK, Rust,...)"
     },
-    "version": "0.7.17~ynh1",
+    "version": "1.2.2~ynh1",
     "url": "https://pterodactyl.io/",
     "license": "MIT",
     "maintainer": {
@@ -50,6 +50,16 @@
                     "fr": "Choisissez l’administrateur (should be a YunoHost registered user)"
                 },
                 "example": "johndoe"
+            },
+            {
+                "name": "language",
+                "type": "string",
+                "ask": {
+                    "en": "Choose the application language",
+                    "fr": "Choisissez la langue de l'application"
+                },
+                "choices": ["fr", "en"],
+                "default": "fr"
             },
             {
                 "name": "password",
