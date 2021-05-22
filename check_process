@@ -1,15 +1,12 @@
-# See here for more informations
-# https://github.com/YunoHost/package_check#syntax-check_process-file
-
 ;; Test complet
 	; Manifest
-		domain="domain.tld"	(DOMAIN)
-		path="/pterodactyl"	(PATH)	
-		is_public=1	(PUBLIC|public=1|private=0)
+		domain="domain.tld"
+		path="/pterodactyl"
+		is_public=1
 		language="fr"
 		password="pass"
-        admin="john"    (USER)
-		port="9980"	(PORT)
+        admin="john"
+		port="9980"
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=1
