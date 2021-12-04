@@ -170,30 +170,30 @@ chown -R $app:www-data "$final_path"
 # Install Docker
 #==============================================
 
-curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-ynh_package_update
-ynh_package_install docker-ce
-cp -a ../conf/daemon.json /etc/docker/daemon.json
-systemctl enable docker --quiet
-systemctl start docker
+# curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+# add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+# ynh_package_update
+# ynh_package_install docker-ce
+# cp -a ../conf/daemon.json /etc/docker/daemon.json
+# systemctl enable docker --quiet
+# systemctl start docker
 
 #==============================================
 # Install Daemon
 #==============================================
 
-mkdir -p /srv/daemon /srv/daemon-data
-pushd /srv/daemon
+# mkdir -p /srv/daemon /srv/daemon-data
+# pushd /srv/daemon
 
-	ynh_setup_source --dest_dir=/srv/daemon --source_id=daemon.src
-	npm install --only=production
+# 	ynh_setup_source --dest_dir=/srv/daemon --source_id=daemon.src
+# 	npm install --only=production
 
-#C'est bien dit dans la doc, ne surtout pas utiliser npm audit fix -_-
-#npm audit fix
-# Ne pas le démarrer ! La config est pas faite et si jamais on le démarre il sera en double avec le systemd.
-#sudo npm start
+# #C'est bien dit dans la doc, ne surtout pas utiliser npm audit fix -_-
+# #npm audit fix
+# # Ne pas le démarrer ! La config est pas faite et si jamais on le démarre il sera en double avec le systemd.
+# #sudo npm start
 
-popd
+# popd
 
 #=================================================
 # SETUP SYSTEMD
