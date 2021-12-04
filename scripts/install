@@ -126,7 +126,6 @@ ynh_add_fpm_config
 ynh_add_config --template="../conf/.env" --destination="$final_path/.env"
 
 
-
 ynh_add_config --template="../conf/wings.service" --destination="/etc/systemd/system/wings.service"
 
 #==============================================
