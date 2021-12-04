@@ -144,10 +144,10 @@ pushd $final_path
 	chmod -R 755 storage/* bootstrap/cache
 	#composer install --no-progress
 	composer install --no-dev --optimize-autoloader
-	php artisan key:generate --force
-	php artisan p:environment:setup
-	php artisan p:environment:database
-	php artisan migrate --seed --force
+	php$phpversion  artisan key:generate --force
+	php$phpversion  artisan p:environment:setup
+	php$phpversion  artisan p:environment:database
+	php$phpversion  artisan migrate --seed --force
 	#php artisan migrate --force
 	#php artisan db:seed --force
 	php artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
@@ -222,15 +222,6 @@ yunohost service add wings --description="Pterodactyl Queue Worker"
 ynh_script_progression --message="Setuping a cron..."
 
 ynh_add_config --template="../conf/cron" --destination="/etc/cron.d/$app"
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-
-# Set permissions to app files
-chown -R $app: $final_path
 
 #=================================================
 # SETUP SSOWAT
