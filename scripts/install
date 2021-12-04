@@ -105,7 +105,11 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 ynh_script_progression --message="Setting up wings binarie..." --weight=1
 
+mkdir -p /etc/pterodactyl
+
 ynh_setup_source --dest_dir="/usr/local/bin/wings" --source_id="wings"
+
+chmod u+x "/usr/local/bin/wings"
 
 #=================================================
 # NGINX CONFIGURATION
