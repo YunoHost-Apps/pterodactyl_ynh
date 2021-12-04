@@ -32,6 +32,7 @@ language=$YNH_APP_ARG_LANGUAGE
 is_public=$YNH_APP_ARG_IS_PUBLIC
 password=$YNH_APP_ARG_PASSWORD
 email=$(ynh_user_get_info --username=$admin --key=mail)
+phpversion=$YNH_PHP_VERSION
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -54,6 +55,7 @@ ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=admin --value=$admin
 ynh_app_setting_set --app=$app --key=language --value=$language
+ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
 
 #=================================================
 # FIND AND OPEN A PORT
@@ -101,11 +103,6 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path"
 
-# Set permissions to app files
-chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chown -R $app:www-data "$final_path"
-
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
@@ -128,32 +125,39 @@ ynh_add_fpm_config
 
 ynh_add_config --template="../conf/.env" --destination="$final_path/.env"
 
+
+
 ynh_add_config --template="../conf/wings.service" --destination="/etc/systemd/system/wings.service"
 
 #==============================================
 # INSTALL Composer
 #==============================================
+ynh_script_progression --message="Installing $app with Composer..." --weight=15
 
-ynh_install_composer
+ynh_install_composer --install_args="--no-dev --optimize-autoloader"
 
 #==============================================
 # Install Pterodactyl
 #==============================================
 
 pushd $final_path
-	chmod -R 755 storage/* bootstrap/cache
-	#composer install --no-progress
-	composer install --no-dev --optimize-autoloader
+
 	php$phpversion  artisan key:generate --force
+
 	php$phpversion  artisan p:environment:setup
 	php$phpversion  artisan p:environment:database
+
 	php$phpversion  artisan migrate --seed --force
-	#php artisan migrate --force
-	#php artisan db:seed --force
+
 	php artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
 	#php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
 	#php artisan migrate --seed --force
 popd
+
+# Set permissions to app files
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:www-data "$final_path"
 
 #==============================================
 # Install Docker
