@@ -3,10 +3,10 @@
     "id": "pterodactyl",
     "packaging_format": 1,
     "description": {
-        "en": "Gameserver management panel (Minecraft, ARK, Rust,...)",
-        "fr": "Panel de gestion de serveurs de jeux (Minecraft, ARK, Rust,...)"
+        "en": "Gameserver management panel (Minecraft, ARK, Rust...)",
+        "fr": "Panel de gestion de serveurs de jeux (Minecraft, ARK, Rust...)"
     },
-    "version": "1.2.2~ynh1",
+    "version": "1.6.6~ynh1",
     "url": "https://pterodactyl.io/",
     "license": "MIT",
     "maintainer": {
@@ -14,7 +14,7 @@
         "email": "aeris@e.email"
     },
     "requirements": {
-        "yunohost": ">= 4.2.4"
+        "yunohost": ">= 4.3.0"
     },
     "multi_instance": true,
     "services": [
@@ -25,8 +25,7 @@
     "arguments": {
         "install": [{
                 "name": "domain",
-                "type": "domain",
-                "example": "example.com"
+                "type": "domain"
             },
             {
                 "name": "path",
@@ -51,8 +50,7 @@
             },
             {
                 "name": "password",
-                "type": "password",
-                "example": "Choose a password"
+                "type": "password"
             },
             {
                 "name": "is_public",
