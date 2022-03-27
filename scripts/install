@@ -146,6 +146,7 @@ ynh_install_composer #--install_args="--no-dev --optimize-autoloader"
 #==============================================
 # Install Pterodactyl
 #==============================================
+ynh_script_progression --message="Building $app..." --weight=10
 
 pushd $final_path
 	php$phpversion artisan key:generate --force
