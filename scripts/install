@@ -151,10 +151,9 @@ ynh_script_progression --message="Building $app..." --weight=10
 pushd $final_path
 	php$phpversion artisan key:generate -n --force --env
 	#php$phpversion artisan p:environment:setup --author=$email --url=https://$domain$path_url --timezone=Europe/Paris --cache=redis --session=database --queue=redis --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
-	php$phpversion artisan p:environment:database --env
+	#php$phpversion artisan p:environment:database --env
 	php$phpversion artisan migrate --seed --force
-	php$phpversion artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
-	#php artisan migrate --seed --force
+	php$phpversion artisan p:user:make --name-first=$admin --name-last=$admin --username=$admin --email=$email --password="$password" --admin=1
 popd
 
 # Set permissions to app files
