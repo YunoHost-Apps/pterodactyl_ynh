@@ -28,12 +28,6 @@
                 "type": "domain"
             },
             {
-                "name": "path",
-                "type": "path",
-                "example": "/pterodactyl",
-                "default": "/pterodactyl"
-            },
-            {
                 "name": "admin",
                 "type": "user"
             },
