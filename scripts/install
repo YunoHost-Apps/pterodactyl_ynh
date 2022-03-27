@@ -106,9 +106,12 @@ ynh_script_progression --message="Setting up wings binarie..." --weight=1
 
 mkdir -p /etc/pterodactyl
 
-ynh_setup_source --dest_dir="/usr/local/bin/wings" --source_id="wings"
+ynh_setup_source --dest_dir="/etc/pterodactyl" --source_id="wings"
 
-chmod u+x "/usr/local/bin/wings"
+chmod 750 "/etc/pterodactyl"
+chmod -R o-rwx "/etc/pterodactyl"
+chown -R $app:www-data "/etc/pterodactyl"
+chmod +x "/etc/pterodactyl/wings"
 
 #=================================================
 # NGINX CONFIGURATION
@@ -167,7 +170,7 @@ chown -R $app:www-data "$final_path"
 ynh_script_progression --message="Configuring a systemd service..." --weight=1
 
 mkdir -p /var/log/$app/
-touch /var/log/$app/$app-prod.log
+touch /var/log/$app/$app.log
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
