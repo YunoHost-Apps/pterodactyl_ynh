@@ -19,7 +19,6 @@ app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
 admin=$(ynh_app_setting_get --app=$app --key=admin)
-is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 language=$(ynh_app_setting_get --app=$app --key=language)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
@@ -76,7 +75,7 @@ fi
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..." --time --weight=1
 
-ynh_systemd_action --service_name=$app --action=stop --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app --action=stop --log_path="systemd"
 
 #=================================================
 # CREATE DEDICATED USER
@@ -95,7 +94,7 @@ then
 	ynh_script_progression --message="Upgrading source files..." --time --weight=1
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path"
+	ynh_setup_source --dest_dir="$final_path" --keep="$final_path/.env"
 fi
 
 chmod 750 "$final_path"
@@ -136,9 +135,9 @@ ynh_add_fpm_config
 
 pushd $final_path
 	php$phpversion artisan view:clear
-	php$phpversion  artisan config:clear
-	php$phpversion  artisan migrate --force
-	php$phpversion  artisan db:seed --force
+	php$phpversion artisan config:clear
+	php$phpversion artisan migrate --force
+	php$phpversion artisan db:seed --force
 popd
 
 #=================================================
@@ -161,7 +160,7 @@ yunohost service add $app --description="Pterodactyl Queue Worker" --log="/var/l
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --time --weight=1
 
-ynh_systemd_action --service_name=$app --action=start --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app --action=start --log_path="systemd"
 
 #=================================================
 # RELOAD NGINX

@@ -134,7 +134,7 @@ ynh_script_progression --message="Adding a configuration file..." --weight=1
 ynh_add_config --template="../conf/.env" --destination="$final_path/.env"
 
 chmod 400 "$final_path/$final_path/.env"
-chown $app:$app "$final_path/$final_path/.env"
+chown $app:$app "$final_path/.env"
 
 #==============================================
 # INSTALL Composer
