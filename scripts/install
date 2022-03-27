@@ -129,17 +129,19 @@ ynh_add_fpm_config
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
+ynh_script_progression --message="Adding a configuration file..." --weight=1
 
 ynh_add_config --template="../conf/.env" --destination="$final_path/.env"
 
-ynh_add_config --template="../conf/wings.service" --destination="/etc/systemd/system/wings.service"
+chmod 400 "$final_path/$final_path/.env"
+chown $app:$app "$final_path/$final_path/.env"
 
 #==============================================
 # INSTALL Composer
 #==============================================
 ynh_script_progression --message="Installing $app with Composer..." --weight=15
 
-ynh_install_composer --install_args="--no-dev --optimize-autoloader"
+ynh_install_composer #--install_args="--no-dev --optimize-autoloader"
 
 #==============================================
 # Install Pterodactyl
@@ -159,35 +161,6 @@ popd
 chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
 chown -R $app:www-data "$final_path"
-
-#==============================================
-# Install Docker
-#==============================================
-
-# curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-# add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-# ynh_package_update
-# ynh_package_install docker-ce
-# cp -a ../conf/daemon.json /etc/docker/daemon.json
-# systemctl enable docker --quiet
-# systemctl start docker
-
-#==============================================
-# Install Daemon
-#==============================================
-
-# mkdir -p /srv/daemon /srv/daemon-data
-# pushd /srv/daemon
-
-# 	ynh_setup_source --dest_dir=/srv/daemon --source_id=daemon.src
-# 	npm install --only=production
-
-# #C'est bien dit dans la doc, ne surtout pas utiliser npm audit fix -_-
-# #npm audit fix
-# # Ne pas le démarrer ! La config est pas faite et si jamais on le démarre il sera en double avec le systemd.
-# #sudo npm start
-
-# popd
 
 #=================================================
 # SETUP SYSTEMD
@@ -210,7 +183,6 @@ ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action=start --log_path="/var/log/$app/$app.log"
-# Start a systemd service
 ynh_systemd_action --service_name=wings --action=start --log_path="/var/log/$app/$app.log"
 
 #=================================================
@@ -218,8 +190,8 @@ ynh_systemd_action --service_name=wings --action=start --log_path="/var/log/$app
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..." --weight=2
 
-yunohost service add $app --description="Pterodactyl Queue Worker" --log="/var/log/$app/$app-prod.log"
-yunohost service add wings --description="Pterodactyl Queue Worker" 
+yunohost service add $app --description="Pterodactyl Queue Worker" --log="systemd"
+yunohost service add wings --description="Pterodactyl Queue Worker" --log="systemd"
 
 #=================================================
 # SETUP A CRON
