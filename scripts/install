@@ -109,6 +109,7 @@ mkdir -p /etc/pterodactyl
 ynh_setup_source --dest_dir="/usr/local/bin/wings" --source_id="wings"
 
 chmod u+x "/usr/local/bin/wings"
+chown -R $app:www-data "/usr/local/bin/wings"
 
 #=================================================
 # NGINX CONFIGURATION
