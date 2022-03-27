@@ -7,6 +7,9 @@ User=__APP__
 Group=__APP__
 Restart=always
 ExecStart=/usr/bin/php__PHPVERSION__ __FINALPATH__/artisan queue:work --queue=high,standard,low --sleep=3 --tries=3
+StartLimitInterval=180
+StartLimitBurst=30
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target

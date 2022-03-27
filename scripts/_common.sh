@@ -5,7 +5,7 @@
 #=================================================
 
 # Composer version
-YNH_COMPOSER_VERSION="2.1.3"
+YNH_COMPOSER_VERSION="2.2.9"
 
 YNH_PHP_VERSION="8.0"
 

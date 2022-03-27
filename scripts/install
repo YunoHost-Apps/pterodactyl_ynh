@@ -55,7 +55,6 @@ ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=admin --value=$admin
 ynh_app_setting_set --app=$app --key=language --value=$language
-ynh_app_setting_set --app=$app --key=phpversion --value=$phpversion
 
 #=================================================
 # FIND AND OPEN A PORT
@@ -133,7 +132,6 @@ ynh_add_fpm_config
 
 ynh_add_config --template="../conf/.env" --destination="$final_path/.env"
 
-
 ynh_add_config --template="../conf/wings.service" --destination="/etc/systemd/system/wings.service"
 
 #==============================================
@@ -148,14 +146,10 @@ ynh_install_composer --install_args="--no-dev --optimize-autoloader"
 #==============================================
 
 pushd $final_path
-
-	php$phpversion  artisan key:generate --force
-
-	php$phpversion  artisan p:environment:setup
-	php$phpversion  artisan p:environment:database
-
-	php$phpversion  artisan migrate --seed --force
-
+	php$phpversion artisan key:generate --force
+	php$phpversion artisan p:environment:setup
+	php$phpversion artisan p:environment:database
+	php$phpversion artisan migrate --seed --force
 	php artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
 	#php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
 	#php artisan migrate --seed --force
