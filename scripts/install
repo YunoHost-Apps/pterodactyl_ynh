@@ -136,31 +136,31 @@ ynh_add_config --template="../conf/.env" --destination="$final_path/.env"
 chmod 400 "$final_path/.env"
 chown $app:$app "$final_path/.env"
 
-#==============================================
-# INSTALL Composer
-#==============================================
-ynh_script_progression --message="Installing $app with Composer..." --weight=15
+# #==============================================
+# # INSTALL Composer
+# #==============================================
+# ynh_script_progression --message="Installing $app with Composer..." --weight=15
 
-ynh_install_composer #--install_args="--no-dev --optimize-autoloader"
+# ynh_install_composer #--install_args="--no-dev --optimize-autoloader"
 
-#==============================================
-# Install Pterodactyl
-#==============================================
+# #==============================================
+# # Install Pterodactyl
+# #==============================================
 
-pushd $final_path
-	php$phpversion artisan key:generate --force
-	php$phpversion artisan p:environment:setup
-	php$phpversion artisan p:environment:database
-	php$phpversion artisan migrate --seed --force
-	php artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
-	#php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
-	#php artisan migrate --seed --force
-popd
+# pushd $final_path
+# 	php$phpversion artisan key:generate --force
+# 	php$phpversion artisan p:environment:setup
+# 	php$phpversion artisan p:environment:database
+# 	php$phpversion artisan migrate --seed --force
+# 	php artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
+# 	#php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
+# 	#php artisan migrate --seed --force
+# popd
 
-# Set permissions to app files
-chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chown -R $app:www-data "$final_path"
+# # Set permissions to app files
+# chmod 750 "$final_path"
+# chmod -R o-rwx "$final_path"
+# chown -R $app:www-data "$final_path"
 
 #=================================================
 # SETUP SYSTEMD
