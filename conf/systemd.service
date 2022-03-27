@@ -1,6 +1,5 @@
 [Unit]
 Description=Pterodactyl Queue Worker
-After=redis-server.service
 
 [Service]
 User=__APP__
