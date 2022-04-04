@@ -4,7 +4,7 @@ After=docker.service
 
 [Service]
 User=__APP__
-Group__APP__
+Group=__APP__
 WorkingDirectory=/etc/pterodactyl
 LimitNOFILE=4096
 PIDFile=/var/run/wings/daemon.pid
