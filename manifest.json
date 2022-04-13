@@ -41,7 +41,7 @@
                 "name": "language",
                 "type": "string",
                 "ask": {
-                    "en": "Choose the application language",
+                    "en": "Choose the application languageyeet",
                     "fr": "Choisissez la langue de l'application"
                 },
                 "choices": ["fr", "en"],
