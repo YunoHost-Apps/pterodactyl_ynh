@@ -1,14 +1,11 @@
 # Pterodactyl app for YunoHost
+[![Integration level](https://dash.yunohost.org/integration/pterodactyl.svg)](https://dash.yunohost.org/appci/app/pterodactyl) ![Working status](https://ci-apps.yunohost.org/ci/badges/pterodactyl.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/pterodactyl.maintain.svg)  
+[![Install Pterodactyl app with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=pterodactyl)
+
 Pterodactyl Panel
 
 - [Yunohost project](https://yunohost.org)
 - [Pterodactyl website](https://pterodactyl.io/)
-
-![](https://camo.githubusercontent.com/16f7dd2ec822cd42dc42f7e193d3fa2652c26e45/68747470733a2f2f63646e2e707465726f64616374796c2e696f2f6c6f676f732f42616e6e65722532304c6f676f253230426c61636b4032782e706e67)
-![](https://ci-apps.yunohost.org/ci/badges/pterodactyl.maintain.svg)
-![](https://ci-apps.yunohost.org/ci/badges/pterodactyl.status.svg)
-[![Integration level](https://dash.yunohost.org/integration/REPLACEBYYOURAPP.svg)](https://dash.yunohost.org/appci/app/pterodactyl)  
-[![Install Pterodactyl with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=pterodactyl)
 
 *[Lire ce readme en français.](./README_fr.md)*
 
@@ -16,7 +13,7 @@ Pterodactyl Panel
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
 
 
-**Shipped version:** 0.7.12
+**Shipped version:** 1.10.1~ynh1
 
 ## Screenshots
 

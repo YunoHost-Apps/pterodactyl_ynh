@@ -15,7 +15,7 @@ Pterodactyl Panel
 Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
 
 
-**Version de Pterodactyl** : 0.7.12
+**Version de Pterodactyl** : 1.10.1~ynh1
 
 ## Screenshots
 
