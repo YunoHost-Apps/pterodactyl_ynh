@@ -12,6 +12,8 @@ Pterodactyl Panel
 > *This package allow you to install Pterodactyl quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
 
+## Overview
+Pterodactyl is the open-source game server management panel built with PHP7, Nodejs, and Go. Designed with security in mind, Pterodactyl runs all game servers in isolated Docker containers while exposing a beautiful and intuitive UI to administrators and users. Stop wasting time fiddling with other systems — make game servers a first class citizen on your platform.
 
 **Shipped version:** 1.10.1~ynh1
 
@@ -22,7 +24,7 @@ If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to
 ## Demo
 
 * [Pterodactyl demo](https://demo.pterodactyl.io/)
-Please note this is the official Pterodactyl demo, this demo is **not** hosted on a Yunohost server.
+Please note this is the official Pterodactyl demo, this demo is **not** hosted on a YunoHost server.
 
 ### Installing guide
 
@@ -50,18 +52,18 @@ Please note this is the official Pterodactyl demo, this demo is **not** hosted o
 
 ## Documentation
 
- * Official documentation: Link to the official documentation of this app
+ * Official documentation: https://pterodactyl.io/project/introduction.html
  * YunoHost documentation: If specific documentation is needed, feel free to contribute.
 
 ## YunoHost specific features
 
 #### Multi-users support
 
-As Pterodactyl do not support LDAP for now [#594](https://github.com/pterodactyl/panel/issues/594), this app will not be synced with Yunohost users.
+As Pterodactyl do not support LDAP for now [#594](https://github.com/pterodactyl/panel/issues/594), this app will not be synced with YunoHost users.
 
 #### Supported architectures
 
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/pterodactyl%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/pterodactyl/)
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/pterodactyl%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/pterodactyl/)
 * ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/pterodactyl%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/pterodactyl/)
 
 ## Limitations
@@ -78,9 +80,9 @@ As Pterodactyl do not support LDAP for now [#594](https://github.com/pterodactyl
 
 ---
 
-Developers info
-----------------
-Please do your pull request to the [develop branch](https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/develop).
+## Developers info
+
+Please do your pull request to the [testing branch](https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing).
 
 To try the testing branch, please proceed like that.
 ```
