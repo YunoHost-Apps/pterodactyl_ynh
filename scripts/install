@@ -59,11 +59,11 @@ ynh_script_progression "Install $app"
 
 pushd $install_dir
 	php$php_version artisan key:generate --force
-	php$php_version artisan p:environment:setup --no-interaction
+	php$php_version artisan p:environment:setup --no-interaction #--author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
 	php$php_version artisan p:environment:database --no-interaction
 	php$php_version artisan p:environment:smtp --no-interaction
 	php$php_version artisan migrate --seed --force
-	#php$php_version artisan p:user:make
+	#php$php_version artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
 popd
 
 #=================================================
