@@ -1,57 +1,78 @@
 #!/bin/bash
 
-# Exit on command errors and treat unset variables as an error
-set -eu
-
-# See comments in install script
-app=$YNH_APP_INSTANCE_NAME
-final_path=/opt/yunohost/$app
-
-# Source YunoHost helpers
+source _common.sh
 source /usr/share/yunohost/helpers
 
-# Set permissions to app files
-# you may need to make some file and/or directory writeable by www-data (nginx user)
-#sudo chown -R root: $src_path
+#=================================================
+# STOP SYSTEMD SERVICE
+#=================================================
+ynh_script_progression "Stopping $app's systemd service..."
+
+ynh_systemctl --service="$app" --action="stop"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression "Upgrading source files..."
 
-ynh_app_setting_set $app final_path $final_path
-# Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source "$final_path"
+ynh_setup_source --dest_dir="$install_dir" --full_replace --keep=".env"
 
-#==============================================
-# INSTALL PLEX
-#==============================================
-
-dpkg --install $final_path/emby-server-deb*
+chown -R "$app:www-data" "$install_dir"
 
 #=================================================
-# NGINX CONFIGURATION
+# UPDATE A CONFIG FILE
+#=================================================
+ynh_script_progression "Updating $app's configuration files..."
+
+ynh_config_add --template=".env" --destination="$install_dir/.env"
+
+chmod 400 "$install_dir/.env"
+chown "$app:$app" "$install_dir/.env"
+
+#=================================================
+# REAPPLY SYSTEM CONFIGURATIONS
+#=================================================
+ynh_script_progression "Upgrading system configurations related to $app..."
+
+ynh_config_add_phpfpm
+
+ynh_config_add_nginx
+
+ynh_config_add_systemd
+
+yunohost service add "$app" --description="Game server management panel" --log="/var/log/$app/$app.log"
+
+#=================================================
+# INSTALL PTERODACTYL WITH COMPOSER
+#=================================================
+ynh_script_progression "Installing $app with Composer..."
+
+ynh_composer_install
+ynh_composer_exec install --no-dev --optimize-autoloader
+
+#=================================================
+# FINAL PTERODACTYL INSTALL
+#=================================================
+ynh_script_progression "Install $app"
+
+pushd $install_dir
+	php$php_version artisan key:generate --force
+	php$php_version artisan p:environment:setup
+	php$php_version artisan p:environment:database
+	php$php_version artisan p:environment:smtp
+	php$php_version artisan migrate --seed --force
+	#php$php_version artisan p:user:make
+popd
+
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression "Starting $app's systemd service..."
+
+ynh_systemctl --service="$app" --action="start"
+
+#=================================================
+# END OF SCRIPT
 #=================================================
 
-# Create a dedicated nginx config
-#ynh_add_nginx_config
-
-
-#=================================================
-# UPGRADE CONFIG
-#=================================================
-#cp -a ../conf/loolwsd.xml /etc/loolwsd
-#ynh_replace_string "__NEXTCLOUDDOMAIN__" "$nextcloud_domain" "/etc/loolwsd/loolwsd.xml"
-#ynh_replace_string "__PASSWORD__" "$password" "/etc/loolwsd/loolwsd.xml"
-#systemctl restart loolwsd
-
-
-
-# If app is public, add url to SSOWat conf as skipped_uris
-#if [[ $is_public -eq 1 ]]; then
-  # See install script
-#  ynh_app_setting_set "$app" unprotected_uris "/"
-#fi
-
-# Reload nginx service
-systemctl restart plexmediaserver
-
+ynh_script_progression "Upgrade of $app completed"

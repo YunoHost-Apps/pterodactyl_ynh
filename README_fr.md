@@ -1,91 +1,48 @@
-# Application Pterodactyl pour Yunohost
-Pterodactyl Panel
+<!--
+Nota bene : ce README est automatiquement généré par <https://github.com/YunoHost/apps/tree/master/tools/readme_generator>
+Il NE doit PAS être modifié à la main.
+-->
 
-- [Projet YunoHost](https://yunohost.org)
-- [Site Web Pterodactyl](https://pterodactyl.io/)
+# Pterodactyl pour YunoHost
 
-![](https://camo.githubusercontent.com/16f7dd2ec822cd42dc42f7e193d3fa2652c26e45/68747470733a2f2f63646e2e707465726f64616374796c2e696f2f6c6f676f732f42616e6e65722532304c6f676f253230426c61636b4032782e706e67)
+[![Niveau d’intégration](https://dash.yunohost.org/integration/pterodactyl.svg)](https://ci-apps.yunohost.org/ci/apps/pterodactyl/) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/pterodactyl.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/pterodactyl.maintain.svg)
 
-[![Integration level](https://dash.yunohost.org/integration/REPLACEBYYOURAPP.svg)](https://dash.yunohost.org/appci/app/pterodactyl)  
-[![Installer Pterodactyl Avec Yunohost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=pterodactyl)
+[![Installer Pterodactyl avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=pterodactyl)
 
-*[Read this readme in english.](./README.md)* 
+*[Lire le README dans d'autres langues.](./ALL_README.md)*
 
-> *Ce package vous permet d'installer REPLACEBYYOURAPP rapidement et simplement sur un serveur Yunohost.  
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
+> *Ce package vous permet d’installer Pterodactyl rapidement et simplement sur un serveur YunoHost.*  
+> *Si vous n’avez pas YunoHost, consultez [ce guide](https://yunohost.org/install) pour savoir comment l’installer et en profiter.*
+
+## Vue d’ensemble
+
+Ceci est une fausse description des fonctionalités de l'app
 
 
-**Version de Pterodactyl** : 0.7.12
+**Version incluse :** 1.11.7~ynh1
 
-## Screenshots
+## Captures d’écran
 
-![](https://pterodactyl.io/frontpage/mockup-macbook-grey.png)
+![Capture d’écran de Pterodactyl](./doc/screenshots/example.jpg)
 
-## Demo
+## Documentations et ressources
 
-* [Pterodactyl demo](https://demo.pterodactyl.io/)
-Merci de noter qu'il s'agit de la démo officielle de Pterodactyl, elle n'est pas hébergée sur un serveur YunoHost
+- Site officiel de l’app : <https://pterodactyl.io/>
+- Documentation officielle de l’admin : <https://pterodactyl.io/project/introduction.html>
+- Dépôt de code officiel de l’app : <https://github.com/pterodactyl/panel>
+- YunoHost Store : <https://apps.yunohost.org/app/pterodactyl>
+- Signaler un bug : <https://github.com/YunoHost-Apps/pterodactyl_ynh/issues>
 
-### Installing guide
+## Informations pour les développeurs
 
- Cette application peut être installée par **l'interface administrateur** de YunoHost ou en **effectuant la commande suivante**:
+Merci de faire vos pull request sur la [branche `testing`](https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing).
 
-         $ sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh
-         
-         Après l'installation:
-         
-         1. Connectez-vous au panel
-         2. Créez une location
-         3. Créez un node
-         4. Copiez la configuration (core.json) pour le node créé en 3.
-         5. Modifiez core.json
-         $ sudo nano /srv/daemon/config/core.json
-         6. Modifiez les chemins des certificats SSL Yunohost.
-         $ /etc/yunohost/certs/yourDomain.tld/crt.pem = SSL Certificate
-         $ /etc/yunohost/certs/yourDomain.tld/key.pem = SSL Key
-         7. Démarrez le service Wings
-         $ sudo systemctl start wings
- 
-### Mettre à jour:
+Pour essayer la branche `testing`, procédez comme suit :
 
-        $ sudo yunohost app upgrade pterodactyl -u https://github.com/YunoHost-Apps/pterodactyl_ynh
-
-## Documentation
-
- * Documentation officielle: https://pterodactyl.io
-
-## Fonctionnalités Yunohost
-
-#### Support du multi-utilisateurs
-
-Pterodactyl ne supporte pas le LDAP pour l'instant [#594](https://github.com/pterodactyl/panel/issues/594), cette application n'est donc pas synchronisée avec la base d'utilisateurs Yunohost.
-
-#### Architectures supportées
-
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/pterodactyl%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/pterodactyl/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/pterodactyl%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/pterodactyl/)
-
-## Limitations
-
-* LDAP ne fonctionne pas pour l'instant
-* Vous devrez manuellement ouvrir les ports si vous voulez plusieurs daemons/nodes.
-
-## Liens
-
- * Rapporter un bug: https://github.com/YunoHost-Apps/pterodactyl_ynh/issues
- * Pterodactyl: https://pterodactyl.io
- * Repo Pterodactyl: https://github.com/pterodactyl/
- * YunoHost: https://yunohost.org/
-
----
-
-Developers info
-----------------
-Merci de faire vos PR sur la branche [develop](https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/develop).
-
-Pour essayer la branche testing, effectuez ces commandes :
+```bash
+sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing --debug
+ou
+sudo yunohost app upgrade pterodactyl -u https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/testing --debug
 ```
-sudo yunohost app install https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/develop --debug
-or
-sudo yunohost app upgrade pterodactyl -u https://github.com/YunoHost-Apps/pterodactyl_ynh/tree/develop --debug
-```
+
+**Plus d’infos sur le packaging d’applications :** <https://yunohost.org/packaging_apps>

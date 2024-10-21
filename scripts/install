@@ -1,262 +1,80 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# MANAGE SCRIPT FAILURE
+# INITIALIZE AND STORE SETTINGS
 #=================================================
 
-ynh_clean_setup () {
-	### Remove this function if there's nothing to clean before calling the remove script.
-	true
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
-
-#=================================================
-# RETRIEVE ARGUMENTS FROM THE MANIFEST
-#=================================================
-
-# Retrieve arguments
-domain=$YNH_APP_ARG_DOMAIN
-path_url=$YNH_APP_ARG_PATH
-admin=$YNH_APP_ARG_ADMIN
-is_public=$YNH_APP_ARG_IS_PUBLIC
-password=$YNH_APP_ARG_PASSWORD
-
-### If it's a multi-instance app, meaning it can be installed several times independently
-### The id of the app as stated in the manifest is available as $YNH_APP_ID
-### The instance number is available as $YNH_APP_INSTANCE_NUMBER (equals "1", "2", ...)
-### The app instance name is available as $YNH_APP_INSTANCE_NAME
-###    - the first time the app is installed, YNH_APP_INSTANCE_NAME = ynhexample
-###    - the second time the app is installed, YNH_APP_INSTANCE_NAME = ynhexample__2
-###    - ynhexample__{N} for the subsequent installations, with N=3,4, ...
-### The app instance name is probably what interests you most, since this is
-### guaranteed to be unique. This is a good unique identifier to define installation path,
-### db names, ...
-app=$YNH_APP_INSTANCE_NAME
-
-#=================================================
-# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
-#=================================================
-
-### If the app uses nginx as web server (written in HTML/PHP in most cases), the final path should be "/var/www/$app".
-### If the app provides an internal web server (or uses another application server such as uwsgi), the final path should be "/opt/yunohost/$app"
-final_path=/var/www/$app
-test ! -e "$final_path" || ynh_die "This path already contains a folder"
-
-# Normalize the url path syntax
-path_url=$(ynh_normalize_url_path $path_url)
-
-# Check web path availability
-ynh_webpath_available $domain $path_url
-# Register (book) web path
-ynh_webpath_register $app $domain $path_url
-
-#=================================================
-# STORE SETTINGS FROM MANIFEST
-#=================================================
-
-ynh_app_setting_set $app domain $domain
-ynh_app_setting_set $app path $path_url
-ynh_app_setting_set $app admin $admin
-ynh_app_setting_set $app is_public $is_public
-
-#=================================================
-# FIND AND OPEN A PORT
-#=================================================
-
-### Use these lines if you have to open a port for the application
-### `ynh_find_port` will find the first available port starting from the given port.
-### If you're not using these lines:
-###		- Remove the section "CLOSE A PORT" in the remove script
-
-# Find a free port
-port=$(ynh_find_port 8080)
-# Open this port
-yunohost firewall allow --no-upnp TCP $port 2>&1
-ynh_app_setting_set $app port $port
-
-#==============================================
-# INSTALL DEPS
-#==============================================
-
-## Install the PHP 7.2 repo for debian
-ynh_package_install ca-certificates apt-transport-https
-wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
-echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
-
-## Get apt updates
-ynh_package_update
-ynh_package_install libargon2-1 libsodium23 libzip5 memcached php-igbinary php-memcached php-msgpack php-xdebug php7.2 php7.2-bcmath php7.2-cli php7.2-common php7.2-curl php7.2-fpm php7.2-gd php7.2-json php7.2-mbstring php7.2-mysql php7.2-opcache php7.2-readline php7.2-xml php7.2-zip
-
-
-## Start php7
-systemctl enable php7.2-fpm
-systemctl start php7.2-fpm
-
-#=================================================
-# CREATE A MYSQL DATABASE
-#=================================================
-# If your app uses a MySQL database, you can use these lines to bootstrap
-# a database, an associated user and save the password in app settings
-
-db_name=$(ynh_sanitize_dbid $app)
-ynh_app_setting_set $app db_name $db_name
-ynh_mysql_setup_db $db_name $db_name
+timezone="$(cat /etc/timezone)"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression "Setting up source files..."
 
-ynh_app_setting_set $app final_path $final_path
-# Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source "$final_path"
+ynh_setup_source --dest_dir="$install_dir"
 
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
-
-# Create a dedicated nginx config
-ynh_add_nginx_config
+chown -R "$app:www-data" "$install_dir"
+chmod -R 755 $install_dir/storage/* $install_dir/bootstrap/cache/
 
 #=================================================
-# CREATE DEDICATED USER
+# SYSTEM CONFIGURATION
 #=================================================
+ynh_script_progression "Adding system configurations related to $app..."
 
-# Create a system user
-ynh_system_user_create $app
+ynh_config_add_phpfpm
 
-#=================================================
-# SPECIFIC SETUP
-#=================================================
+ynh_config_add_nginx
 
-# create a user
-email=$(ynh_user_get_info $admin 'mail')
+ynh_config_add_systemd
 
-# setup application config
-cp -a ../conf/.env.example $final_path/.env
-cp -a ../conf/wings.service /etc/systemd/system/wings.service
+yunohost service add "$app" --description="Game server management panel" --log="/var/log/$app/$app.log"
+
+ynh_config_add --template=".cron" --destination="/etc/cron.d/$app"
 
 #=================================================
-# MODIFY A CONFIG FILE
+# APP INITIAL CONFIGURATION
 #=================================================
+ynh_script_progression "Adding $app's configuration files..."
 
-#ynh_replace_string "random_key" "$random_key" "$final_path/.env"
-ynh_replace_string "yunouser"   "$db_name"    "$final_path/.env"
-ynh_replace_string "yunopass"   "$db_pwd"     "$final_path/.env"
-ynh_replace_string "yunobase"   "$db_name"    "$final_path/.env"
-ynh_replace_string "yunomail"   "$email"      "$final_path/.env"
-ynh_replace_string "yunodomain" "$domain"     "$final_path/.env"
+ynh_config_add --template=".env" --destination="$install_dir/.env"
 
-#==============================================
-# INSTALL Composer
-#==============================================
-
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php composer-setup.php --install-dir=/usr/bin --filename=composer
-php -r "unlink('composer-setup.php');"
+#chmod 600 "$install_dir/.env"
+#chown "$app:$app" "$install_dir/.env"
 
 #=================================================
-# DOWNLOAD, CHECK AND UNPACK SOURCE
+# INSTALL PTERODACTYL WITH COMPOSER
 #=================================================
+ynh_script_progression "Installing $app with Composer..."
 
-### `ynh_setup_source` is used to install an app from a zip or tar.gz file,
-### downloaded from an upstream source, like a git repository.
-### `ynh_setup_source` use the file conf/app.src
+ynh_composer_install
+ynh_composer_exec install --no-dev --optimize-autoloader
 
-ynh_app_setting_set $app final_path $final_path
-# Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source "$final_path"
+#=================================================
+# FINAL PTERODACTYL INSTALL
+#=================================================
+ynh_script_progression "Install $app"
 
-#==============================================
-# Install Pterodactyl
-#==============================================
-
-pushd $final_path
-chmod -R 755 storage/* bootstrap/cache
-composer install --no-progress
-php artisan key:generate --force
-php artisan migrate --force
-php artisan db:seed --force
-php artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
-php artisan p:environment:setup --author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
-php artisan migrate --seed --force
-popd
-
-#==============================================
-# Install wings
-#==============================================
-
-ynh_package_install apt-transport-https ca-certificates curl gnupg2 software-properties-common zip unzip tar make gcc g++ python curl gnupg
-curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-ynh_package_update
-ynh_package_install docker-ce
-cp -a ../conf/daemon.json /etc/docker/daemon.json
-systemctl enable docker
-systemctl start docker
-mkdir -p /srv/daemon /srv/daemon-data
-pushd /srv/daemon
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-ynh_package_install nodejs make gcc g++
-curl -L https://github.com/pterodactyl/daemon/releases/download/v0.6.11/daemon.tar.gz | tar --strip-components=1 -xzv
-npm install --only=production
-npm audit fix
-sudo npm start
+pushd $install_dir
+	php$php_version artisan key:generate --force
+	php$php_version artisan p:environment:setup --no-interaction
+	php$php_version artisan p:environment:database --no-interaction
+	php$php_version artisan p:environment:smtp --no-interaction
+	php$php_version artisan migrate --seed --force
+	#php$php_version artisan p:user:make
 popd
 
 #=================================================
-# SETUP SYSTEMD
+# START SYSTEMD SERVICE
 #=================================================
+ynh_script_progression "Starting $app's systemd service..."
 
-ynh_add_systemd_config
-systemctl enable $app.service
-systemctl enable wings.service
-
-#=================================================
-# ADVERTISE SERVICE IN ADMIN PANEL
-#=================================================
-
-mkdir -p /var/log/pterodactyl/
-touch /var/log/$app/$app-prod.log
-yunohost service add $app --log "/var/log/$app/$app-prod.log"
-
-#==============================================
-# Cron
-#==============================================
-
-crontab -l | { cat; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run" ; } | crontab -
+ynh_systemctl --service="$app" --action="start"
 
 #=================================================
-# GENERIC FINALIZATION
-#=================================================
-# SECURE FILES AND DIRECTORIES
+# END OF SCRIPT
 #=================================================
 
-# Set permissions to app files
-chown -R www-data:www-data $final_path
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-
-# Make app public if necessary
-if [ $is_public -eq 1 ]
-then
-	# unprotected_uris allows SSO credentials to be passed anyway.
-	ynh_app_setting_set $app unprotected_uris "/"
-fi
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-
-systemctl reload nginx
+ynh_script_progression "Installation of $app completed"

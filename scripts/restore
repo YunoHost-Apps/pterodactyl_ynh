@@ -1,52 +1,68 @@
 #!/bin/bash
 
-# Note: each files and directories you've saved using the ynh_backup helper
-# will be located in the current directory, regarding the last argument.
 
-# Exit on command errors and treat unset variables as an error
-set -eu
-
-# See comments in install script
-app=$YNH_APP_INSTANCE_NAME
-
-# Source YunoHost helpers
+source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
-# Retrieve old app settings
-domain=$(ynh_app_setting_get "$app" domain)
-path_url=$(ynh_app_setting_get "$app" path_url)
+#=================================================
+# RESTORE THE APP MAIN DIR
+#=================================================
+ynh_script_progression "Restoring the app main directory..."
 
-# Check domain/path availability
-sudo yunohost app checkurl "${domain}${path_url}" -a "$app" \
-    || ynh_die "Path not available: ${domain}${path_url}"
+ynh_restore "$install_dir"
 
-# Restore sources & data
-src_path="/var/www/${app}"
-sudo cp -a ./sources "$src_path"
+chown -R "$app:www-data" "$install_dir"
 
-# Restore permissions to app files
-# you may need to make some file and/or directory writeable by www-data (nginx user)
-sudo chown -R root: "$src_path"
+#=================================================
+# RESTORE THE DATA DIRECTORY
+#=================================================
+ynh_script_progression "Restoring the data directory..."
 
-### MySQL (remove if not used) ###
-# If a MySQL database is used:
-# # Create and restore the database
-# dbname=$app
-# dbuser=$app
-# dbpass=$(ynh_app_setting_get "$app" mysqlpwd)
-# ynh_mysql_create_db "$dbname" "$dbuser" "$dbpass"
-# ynh_mysql_connect_as "$dbuser" "$dbpass" "$dbname" < ./dump.sql
-### MySQL end ###
+ynh_restore "$data_dir"
 
-# Restore NGINX configuration
-sudo cp -a ./nginx.conf "/etc/nginx/conf.d/${domain}.d/${app}.conf"
+#=================================================
+# RESTORE THE MYSQL DATABASE
+#=================================================
+ynh_script_progression "Restoring the MySQL database..."
 
-### PHP (remove if not used) ###
-# If a dedicated php-fpm process is used:
-# # Copy PHP-FPM pool configuration and reload the service
-# sudo cp -a ./php-fpm.conf "/etc/php5/fpm/pool.d/${app}.conf"
-# sudo service php5-fpm reload
-### PHP end ###
+ynh_mysql_db_shell < ./db.sql
 
-# Restart webserver
-sudo service nginx reload
+#=================================================
+# RESTORE SYSTEM CONFIGURATIONS
+#=================================================
+ynh_script_progression "Restoring system configurations related to $app..."
+
+ynh_restore "/etc/php/$php_version/fpm/pool.d/$app.conf"
+
+ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
+
+ynh_restore "/etc/systemd/system/$app.service"
+systemctl enable "$app.service" --quiet
+
+yunohost service add "$app" --description="Game server management panel" --log="/var/log/$app/$app.log"
+
+#=================================================
+# RESTORE VARIOUS FILES
+#=================================================
+
+ynh_restore "/etc/cron.d/$app"
+
+ynh_restore "/var/log/$app/"
+
+#=================================================
+# RELOAD NGINX AND PHP-FPM OR THE APP SERVICE
+#=================================================
+ynh_script_progression "Reloading NGINX web server and $app's service..."
+
+### Typically you only have either $app or PHP-FPM but not both at the same time...
+ynh_systemctl --service="$app" --action="start"
+
+ynh_systemctl --service="php$php_version-fpm" --action=reload
+
+ynh_systemctl --service=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression "Restoration completed for $app"
