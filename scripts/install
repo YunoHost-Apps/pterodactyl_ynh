@@ -16,9 +16,6 @@ ynh_script_progression "Setting up source files..."
 
 ynh_setup_source --dest_dir="$install_dir"
 
-chown -R "$app:www-data" "$install_dir"
-chmod -R 755 $install_dir/storage/* $install_dir/bootstrap/cache/
-
 #=================================================
 # SYSTEM CONFIGURATION
 #=================================================
@@ -40,9 +37,6 @@ ynh_config_add --template=".cron" --destination="/etc/cron.d/$app"
 ynh_script_progression "Adding $app's configuration files..."
 
 ynh_config_add --template=".env" --destination="$install_dir/.env"
-
-chmod 600 "$install_dir/.env"
-chown "$app:$app" "$install_dir/.env"
 
 #=================================================
 # INSTALL PTERODACTYL WITH COMPOSER
