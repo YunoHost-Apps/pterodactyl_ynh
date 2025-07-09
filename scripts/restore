@@ -45,8 +45,6 @@ yunohost service add "$app" --description="Game server management panel" --log="
 
 ynh_restore "/etc/cron.d/$app"
 
-ynh_restore "/var/log/$app/"
-
 #=================================================
 # RELOAD NGINX AND PHP-FPM OR THE APP SERVICE
 #=================================================

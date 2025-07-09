@@ -3,6 +3,8 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
+timezone="$(cat /etc/timezone)"
+
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
@@ -20,9 +22,9 @@ ynh_setup_source --dest_dir="$install_dir" --full_replace --keep=".env"
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression "Updating $app's configuration files..."
+#ynh_script_progression "Updating $app's configuration files..."
 
-ynh_config_add --template=".env" --destination="$install_dir/.env"
+#ynh_config_add --template=".env" --destination="$install_dir/.env"
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
@@ -52,11 +54,7 @@ ynh_script_progression "Install $app"
 
 pushd $install_dir
 	php$php_version artisan key:generate --force
-	php$php_version artisan p:environment:setup
-	php$php_version artisan p:environment:database
-	php$php_version artisan p:environment:smtp
 	php$php_version artisan migrate --seed --force
-	#php$php_version artisan p:user:make
 popd
 
 #=================================================
