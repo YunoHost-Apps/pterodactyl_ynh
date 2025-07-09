@@ -8,6 +8,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 timezone="$(cat /etc/timezone)"
+key="$(ynh_string_random --length=64)"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE

@@ -45,7 +45,7 @@ ram.runtime = "50M"
     [resources.sources.main]
     in_subdir = false
     url = "https://github.com/pterodactyl/panel/releases/download/v1.11.11/panel.tar.gz"
-    sha256 = "b157e0e46cd639a031e9b4dd046c6e655c276382fb73785afe3194300ed3cfd07"
+    sha256 = "157e0e46cd639a031e9b4dd046c6e655c276382fb73785afe3194300ed3cfd07"
 
     autoupdate.strategy = "latest_github_tag"
 
