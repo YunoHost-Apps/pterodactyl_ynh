@@ -4,8 +4,8 @@ packaging_format = 2
 
 id = "pterodactyl"
 name = "Pterodactyl"
-description.en = "Open-source game server management panel"
-description.fr = "Panneau de gestion du serveur de jeu open source"
+description.en = "Game server management panel"
+description.fr = "Panneau de gestion du serveur de jeu"
 
 version = "1.11.11~ynh1"
 
@@ -63,7 +63,7 @@ ram.runtime = "50M"
     [resources.ports]
 
     [resources.apt]
-    packages = "tar, unzip, git, redis-server, mariadb-server, php8.3-gd, php8.3-mysql, php8.3-mbstring, php8.3-bcmath, php8.3-xml, php8.3-curl, php8.3-zip"
+    packages = "tar, unzip, redis-server, mariadb-server, php8.3-gd, php8.3-mysql, php8.3-mbstring, php8.3-bcmath, php8.3-xml, php8.3-curl, php8.3-zip"
 
     [resources.database]
     type = "mysql"
