@@ -38,6 +38,19 @@ ram.runtime = "50M"
     type = "group"
     default = "visitors"
 
+    [install.language]
+    ask.en = "Choose the application language"
+    ask.fr = "Choisissez la langue de l'application"
+    type = "select"
+    choices = ["fr", "en"]
+    default = "fr"
+
+    [install.admin]
+    type = "user"
+
+    [install.password]
+    type = "password"
+
 [resources]
 
     [resources.sources]
@@ -54,8 +67,6 @@ ram.runtime = "50M"
 
     [resources.install_dir]
     group = "www-data:r-x"
-
-    [resources.data_dir]
 
     [resources.permissions]
     main.url = "/"
