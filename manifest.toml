@@ -34,6 +34,10 @@ ram.runtime = "150M"
     [install.domain]
     type = "domain"
 
+    [install.path]
+    type = "path"
+    default = "/pterodactyl"
+
     [install.init_main_permission]
     type = "group"
     default = "visitors"
