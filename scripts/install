@@ -9,6 +9,9 @@ source /usr/share/yunohost/helpers
 
 timezone="$(cat /etc/timezone)"
 key="$(ynh_string_random --length=64)"
+firstname=$(ynh_user_get_info --username="$admin" --key=firstname)
+lastname=$(ynh_user_get_info --username="$admin" --key=lastname)
+email=$(ynh_user_get_info --username="$admin" --key=mail)
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -54,11 +57,8 @@ ynh_script_progression "Install $app"
 
 pushd $install_dir
 	php$php_version artisan key:generate --force
-	#php$php_version artisan p:environment:setup --no-interaction #--author=$email --url=https://$domain --timezone=America/New_York --cache=redis --session=database --queue=redis --disable-settings-ui --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
-	#php$php_version artisan p:environment:database --no-interaction
-	#php$php_version artisan p:environment:smtp --no-interaction
 	php$php_version artisan migrate --seed --force
-	#php$php_version artisan p:user:make --name-first $admin --name-last $admin --username $admin --email $email --password $password --admin 1
+	php$php_version artisan p:user:make --name-first=$firstname --name-last=$lastname --username=$admin --email=$email --password=$password --admin=1
 popd
 
 #=================================================
