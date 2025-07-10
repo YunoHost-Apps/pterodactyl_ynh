@@ -60,7 +60,8 @@ ram.runtime = "150M"
     url = "https://github.com/pterodactyl/panel/releases/download/v1.11.11/panel.tar.gz"
     sha256 = "157e0e46cd639a031e9b4dd046c6e655c276382fb73785afe3194300ed3cfd07"
 
-    autoupdate.strategy = "latest_github_tag"
+    autoupdate.strategy = "latest_github_release"
+    autoupdate.asset = "^panel.\\.tar\\.xz$"
 
     [resources.system_user]
     allow_email = true
@@ -72,7 +73,7 @@ ram.runtime = "150M"
     main.url = "/"
 
     [resources.apt]
-    packages = "tar, unzip, redis-server, mariadb-server, php8.3-gd, php8.3-mysql, php8.3-mbstring, php8.3-bcmath, php8.3-xml, php8.3-curl, php8.3-zip"
+    packages = "redis-server, mariadb-server, php8.3-gd, php8.3-mysql, php8.3-mbstring, php8.3-bcmath, php8.3-xml, php8.3-curl, php8.3-zip"
 
     [resources.database]
     type = "mysql"
