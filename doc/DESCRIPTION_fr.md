@@ -1,1 +1,1 @@
-Ceci est une fausse description des fonctionalités de l'app
+Pterodactyl est un panneau de gestion de serveurs de jeux construit avec PHP, React et Go. Conçu avec la sécurité à l'esprit, Pterodactyl exécute tous les serveurs de jeu dans des conteneurs Docker isolés tout en exposant une interface utilisateur belle et intuitive aux utilisateurs finaux.
