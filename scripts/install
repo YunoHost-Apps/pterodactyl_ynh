@@ -11,6 +11,7 @@ key="$(ynh_string_random --length=64)"
 firstname=$(ynh_user_get_info --username="$admin" --key=firstname)
 lastname=$(ynh_user_get_info --username="$admin" --key=lastname)
 email=$(ynh_user_get_info --username="$admin" --key=mail)
+main_domain=$(cat /etc/yunohost/current_host)
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
