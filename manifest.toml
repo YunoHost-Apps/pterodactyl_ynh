@@ -61,7 +61,7 @@ ram.runtime = "150M"
     sha256 = "157e0e46cd639a031e9b4dd046c6e655c276382fb73785afe3194300ed3cfd07"
 
     autoupdate.strategy = "latest_github_release"
-    autoupdate.asset = "^panel.\\.tar\\.xz$"
+    autoupdate.asset = "^panel\\.tar\\.gz$"
 
     [resources.system_user]
     allow_email = true
