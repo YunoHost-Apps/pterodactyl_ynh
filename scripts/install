@@ -61,6 +61,20 @@ pushd $install_dir
 popd
 
 #=================================================
+# INSTALL WINGS
+#=================================================
+ynh_script_progression "Install Wings"
+
+curl -sSL https://get.docker.com/ | CHANNEL=stable bash
+ynh_systemctl --service="docker" --action="enable"
+
+mkdir -p /etc/pterodactyl
+curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
+chmod u+x /usr/local/bin/wings
+
+ynh_config_add --template="config.yml" --destination="$install_dir/config.yml"
+
+#=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
