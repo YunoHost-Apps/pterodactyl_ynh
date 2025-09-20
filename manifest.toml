@@ -79,4 +79,4 @@ ram.runtime = "150M"
     type = "mysql"
 
     [resources.composer]
-    version = "2.8.9"
+    version = "2.8.11"
