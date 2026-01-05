@@ -35,6 +35,9 @@ yunohost service add "$app" --description="Game server management panel" --log="
 
 ynh_config_add --template=".cron" --destination="/etc/cron.d/$app"
 
+chown root: "/etc/cron.d/$app"
+chmod 644 "/etc/cron.d/$app"
+
 #=================================================
 # APP INITIAL CONFIGURATION
 #=================================================
