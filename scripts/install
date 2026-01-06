@@ -66,6 +66,7 @@ pushd $install_dir
 	ynh_hide_warnings php$php_version artisan key:generate --force
 	ynh_hide_warnings php$php_version artisan migrate --seed --force
 	ynh_hide_warnings php$php_version artisan p:user:make --name-first=$firstname --name-last=$lastname --username=$admin --email=$email --password=$password --admin=1
+	ynh_hide_warnings php$php_version artisan config:cache
 popd
 
 #=================================================
