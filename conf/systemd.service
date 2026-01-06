@@ -1,17 +1,22 @@
 [Unit]
-Description=Pterodactyl Queue Worker
-After=network.target
+Description=Pterodactyl Wings Daemon
+After=docker.service
+Requires=docker.service
+PartOf=docker.service
 
 [Service]
-Type=simple
-User=__APP__
-Group=__APP__
-Restart=always
+User=root
 WorkingDirectory=__INSTALL_DIR__/
-ExecStart=/usr/bin/php __INSTALL_DIR__/artisan queue:work --queue=high,standard,low --sleep=3 --tries=3
+LimitNOFILE=4096
+PIDFile=/var/run/wings/daemon.pid
+ExecStart=__INSTALL_DIR__/wings
+Restart=on-failure
 StartLimitInterval=180
 StartLimitBurst=30
 RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
 
 
 ### Depending on specificities of your service/app, you may need to tweak these

@@ -19,6 +19,9 @@ main_domain=$(cat /etc/yunohost/current_host)
 ynh_script_progression "Setting up source files..."
 
 ynh_setup_source --dest_dir="$install_dir"
+ynh_setup_source --dest_dir="$install_dir" --source="wings"
+
+chmod +x "$install_dir/wings"
 
 #=================================================
 # SYSTEM CONFIGURATION
