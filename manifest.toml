@@ -18,7 +18,7 @@ admindoc = "https://pterodactyl.io/project/introduction.html"
 code = "https://github.com/pterodactyl/panel"
 
 [integration]
-yunohost = ">= 12.1.17"
+yunohost = ">= 12.1.38"
 helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
@@ -79,4 +79,4 @@ ram.runtime = "150M"
     type = "mysql"
 
     [resources.composer]
-    version = "2.8.9"
+    version = "2.8.11"
