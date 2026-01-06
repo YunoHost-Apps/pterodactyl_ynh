@@ -6,10 +6,10 @@ PartOf=docker.service
 
 [Service]
 User=root
-WorkingDirectory=/etc/pterodactyl
+WorkingDirectory=__INSTALL_DIR__
 LimitNOFILE=4096
 PIDFile=/var/run/wings/daemon.pid
-ExecStart=/usr/local/bin/wings
+ExecStart=__INSTALL_DIR__/wings
 Restart=on-failure
 StartLimitInterval=180
 StartLimitBurst=30

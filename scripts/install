@@ -33,8 +33,10 @@ ynh_config_add_phpfpm
 ynh_config_add_nginx
 
 ynh_config_add_systemd
+ynh_config_add_systemd --service=wings --template=wings.service
 
 yunohost service add "$app" --description="Game server management panel" --log="/var/log/$app/$app.log"
+yunohost service add wings --description="Game server management panel" --log="/var/log/$app/$app.log"
 
 ynh_config_add --template=".cron" --destination="/etc/cron.d/$app"
 

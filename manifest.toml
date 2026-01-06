@@ -7,7 +7,7 @@ name = "Pterodactyl"
 description.en = "Game server management panel"
 description.fr = "Panneau de gestion du serveur de jeu"
 
-version = "1.11.11~ynh1"
+version = "1.12.0~ynh1"
 
 maintainers = [ ]
 
@@ -57,15 +57,15 @@ ram.runtime = "150M"
 
     [resources.sources.main]
     in_subdir = false
-    url = "https://github.com/pterodactyl/panel/releases/download/v1.11.11/panel.tar.gz"
-    sha256 = "157e0e46cd639a031e9b4dd046c6e655c276382fb73785afe3194300ed3cfd07"
-
+    url = "https://github.com/pterodactyl/panel/releases/download/v1.12.0/panel.tar.gz"
+    sha256 = "f4d189acb94861cc5bb31b8684e032d1fde6d79ad98b22bcf03661004a92d398"
     autoupdate.strategy = "latest_github_release"
     autoupdate.asset = "^panel\\.tar\\.gz$"
 
     [resources.sources.wings]
     in_subdir = false
     rename = "wings"
+    extract = false
     amd64.url = "https://github.com/pterodactyl/wings/releases/download/v1.12.0/wings_linux_amd64"
     amd64.sha256 = "b8250adebb41f7bf03605753694273b707122d6f11f84f203b23ecc986724577"
     amd64.url = "https://github.com/pterodactyl/wings/releases/download/v1.12.0/wings_linux_arm64"
@@ -90,4 +90,4 @@ ram.runtime = "150M"
     type = "mysql"
 
     [resources.composer]
-    version = "2.8.11"
+    version = "2.9.4"
