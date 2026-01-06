@@ -1,26 +1,16 @@
 [Unit]
-Description=Pterodactyl Wings Daemon
-After=docker.service
-Requires=docker.service
-PartOf=docker.service
+Description=Pterodactyl Queue Worker
+After=redis-server.service
 
 [Service]
-User=root
-WorkingDirectory=__INSTALL_DIR__/
-LimitNOFILE=4096
-PIDFile=/var/run/wings/daemon.pid
-ExecStart=__INSTALL_DIR__/wings
-Restart=on-failure
+User=__APP__
+Group=__APP__
+Restart=always
+ExecStart=/usr/bin/php__PHP_VERSION__ __INSTALL_DIR__/artisan queue:work --queue=high,standard,low --sleep=3 --tries=3
 StartLimitInterval=180
 StartLimitBurst=30
 RestartSec=5s
 
-[Install]
-WantedBy=multi-user.target
-
-
-### Depending on specificities of your service/app, you may need to tweak these
-### .. but this should be a good baseline
 # Sandboxing options to harden security
 # Details for these options: https://www.freedesktop.org/software/systemd/man/systemd.exec.html
 NoNewPrivileges=yes

@@ -5,8 +5,9 @@ Requires=docker.service
 PartOf=docker.service
 
 [Service]
-User=root
-WorkingDirectory=__INSTALL_DIR__
+User=__APP__
+Group=__APP__
+WorkingDirectory=__INSTALL_DIR__/
 LimitNOFILE=4096
 PIDFile=/var/run/wings/daemon.pid
 ExecStart=__INSTALL_DIR__/wings
