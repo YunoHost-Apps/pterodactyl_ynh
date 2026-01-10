@@ -7,7 +7,7 @@ name = "Pterodactyl"
 description.en = "Game server management panel"
 description.fr = "Panneau de gestion du serveur de jeu"
 
-version = "1.11.11~ynh1"
+version = "1.12.0~ynh1"
 
 maintainers = [ ]
 
@@ -18,7 +18,7 @@ admindoc = "https://pterodactyl.io/project/introduction.html"
 code = "https://github.com/pterodactyl/panel"
 
 [integration]
-yunohost = ">= 12.0.9"
+yunohost = ">= 12.1.38"
 helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
@@ -57,11 +57,11 @@ ram.runtime = "150M"
 
     [resources.sources.main]
     in_subdir = false
-    url = "https://github.com/pterodactyl/panel/releases/download/v1.11.11/panel.tar.gz"
-    sha256 = "157e0e46cd639a031e9b4dd046c6e655c276382fb73785afe3194300ed3cfd07"
+    url = "https://github.com/pterodactyl/panel/releases/download/v1.12.0/panel.tar.gz"
+    sha256 = "f4d189acb94861cc5bb31b8684e032d1fde6d79ad98b22bcf03661004a92d398"
 
     autoupdate.strategy = "latest_github_release"
-    autoupdate.asset = "^panel.\\.tar\\.xz$"
+    autoupdate.asset = "^panel\\.tar\\.gz$"
 
     [resources.system_user]
     allow_email = true
@@ -73,7 +73,10 @@ ram.runtime = "150M"
     main.url = "/"
 
     [resources.apt]
-    packages = "redis-server, mariadb-server, php8.3-gd, php8.3-mysql, php8.3-mbstring, php8.3-bcmath, php8.3-xml, php8.3-curl, php8.3-zip"
+    packages = "redis-server, mariadb-server, php8.4-gd, php8.4-mysql, php8.4-mbstring, php8.4-bcmath, php8.4-xml, php8.4-curl, php8.4-zip"
 
     [resources.database]
     type = "mysql"
+
+    [resources.composer]
+    version = "2.8.11"
