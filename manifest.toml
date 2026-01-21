@@ -59,9 +59,20 @@ ram.runtime = "150M"
     in_subdir = false
     url = "https://github.com/pterodactyl/panel/releases/download/v1.12.0/panel.tar.gz"
     sha256 = "f4d189acb94861cc5bb31b8684e032d1fde6d79ad98b22bcf03661004a92d398"
-
     autoupdate.strategy = "latest_github_release"
     autoupdate.asset = "^panel\\.tar\\.gz$"
+
+    [resources.sources.wings]
+    in_subdir = false
+    rename = "wings"
+    extract = false
+    amd64.url = "https://github.com/pterodactyl/wings/releases/download/v1.12.0/wings_linux_amd64"
+    amd64.sha256 = "b8250adebb41f7bf03605753694273b707122d6f11f84f203b23ecc986724577"
+    arm64.url = "https://github.com/pterodactyl/wings/releases/download/v1.12.0/wings_linux_arm64"
+    arm64.sha256 = "a219d5a97deccccff1e951f8beb97f0f5b59b256d702b2a06bc91a813886b274"
+    autoupdate.strategy = "latest_github_release"
+    autoupdate.asset.amd64 = "wings_linux_amd64"
+    autoupdate.asset.arm64 = "wings_linux_amd64"
 
     [resources.system_user]
     allow_email = true
@@ -79,4 +90,4 @@ ram.runtime = "150M"
     type = "mysql"
 
     [resources.composer]
-    version = "2.8.11"
+    version = "2.9.3"

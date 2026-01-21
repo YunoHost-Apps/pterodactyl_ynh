@@ -28,7 +28,11 @@ ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_restore "/etc/systemd/system/$app.service"
 systemctl enable "$app.service" --quiet
 
+ynh_restore "/etc/systemd/system/wings.service"
+systemctl enable "wings.service" --quiet
+
 yunohost service add "$app" --description="Game server management panel" --log="/var/log/$app/$app.log"
+yunohost service add wings --description="Game server management panel" --log="/var/log/$app/$app.log"
 
 #=================================================
 # RESTORE VARIOUS FILES
@@ -41,8 +45,8 @@ ynh_restore "/etc/cron.d/$app"
 #=================================================
 ynh_script_progression "Reloading NGINX web server and $app's service..."
 
-### Typically you only have either $app or PHP-FPM but not both at the same time...
 ynh_systemctl --service="$app" --action="start"
+ynh_systemctl --service=wings --action="start"
 
 ynh_systemctl --service="php$php_version-fpm" --action=reload
 
