@@ -36,8 +36,10 @@ ynh_config_add_phpfpm
 ynh_config_add_nginx
 
 ynh_config_add_systemd
+ynh_config_add_systemd --service=wings --template=wings.service
 
 yunohost service add "$app" --description="Game server management panel" --log="/var/log/$app/$app.log"
+yunohost service add wings --description="Game server management panel" --log="/var/log/$app/$app.log"
 
 #=================================================
 # INSTALL PTERODACTYL WITH COMPOSER
@@ -61,6 +63,7 @@ popd
 ynh_script_progression "Starting $app's systemd service..."
 
 ynh_systemctl --service="$app" --action="start"
+ynh_systemctl --service=wings --action="start"
 
 #=================================================
 # END OF SCRIPT

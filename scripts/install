@@ -19,6 +19,9 @@ main_domain=$(cat /etc/yunohost/current_host)
 ynh_script_progression "Setting up source files..."
 
 ynh_setup_source --dest_dir="$install_dir"
+ynh_setup_source --dest_dir="$install_dir" --source_id="wings"
+
+chmod +x "$install_dir/wings"
 
 #=================================================
 # SYSTEM CONFIGURATION
@@ -30,8 +33,10 @@ ynh_config_add_phpfpm
 ynh_config_add_nginx
 
 ynh_config_add_systemd
+ynh_config_add_systemd --service=wings --template=wings.service
 
 yunohost service add "$app" --description="Game server management panel" --log="/var/log/$app/$app.log"
+yunohost service add wings --description="Game server management panel" --log="/var/log/$app/$app.log"
 
 ynh_config_add --template=".cron" --destination="/etc/cron.d/$app"
 
@@ -61,7 +66,22 @@ pushd $install_dir
 	ynh_hide_warnings php$php_version artisan key:generate --force
 	ynh_hide_warnings php$php_version artisan migrate --seed --force
 	ynh_hide_warnings php$php_version artisan p:user:make --name-first=$firstname --name-last=$lastname --username=$admin --email=$email --password=$password --admin=1
+	ynh_hide_warnings php$php_version artisan config:cache
 popd
+
+#=================================================
+# INSTALL WINGS
+#=================================================
+ynh_script_progression "Install Wings"
+
+curl -sSL https://get.docker.com/ | CHANNEL=stable bash
+ynh_systemctl --service="docker" --action="enable"
+
+mkdir -p /etc/pterodactyl
+curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
+chmod u+x /usr/local/bin/wings
+
+ynh_config_add --template="config.yml" --destination="$install_dir/config.yml"
 
 #=================================================
 # START SYSTEMD SERVICE

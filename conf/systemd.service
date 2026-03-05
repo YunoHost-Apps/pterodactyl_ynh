@@ -1,21 +1,16 @@
 [Unit]
 Description=Pterodactyl Queue Worker
-After=network.target
+After=redis-server.service
 
 [Service]
-Type=simple
 User=__APP__
 Group=__APP__
 Restart=always
-WorkingDirectory=__INSTALL_DIR__/
-ExecStart=/usr/bin/php __INSTALL_DIR__/artisan queue:work --queue=high,standard,low --sleep=3 --tries=3
+ExecStart=/usr/bin/php__PHP_VERSION__ __INSTALL_DIR__/artisan queue:work --queue=high,standard,low --sleep=3 --tries=3
 StartLimitInterval=180
 StartLimitBurst=30
 RestartSec=5s
 
-
-### Depending on specificities of your service/app, you may need to tweak these
-### .. but this should be a good baseline
 # Sandboxing options to harden security
 # Details for these options: https://www.freedesktop.org/software/systemd/man/systemd.exec.html
 NoNewPrivileges=yes
