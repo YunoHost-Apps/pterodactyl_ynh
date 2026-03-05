@@ -6,7 +6,7 @@ source /usr/share/yunohost/helpers
 # INITIALIZE AND STORE SETTINGS
 #=================================================
 
-timezone="$(cat /etc/timezone)"
+timezone=$(timedatectl show --value --property=Timezone)
 key="$(ynh_string_random --length=64)"
 firstname=$(ynh_user_get_info --username="$admin" --key=firstname)
 lastname=$(ynh_user_get_info --username="$admin" --key=lastname)
