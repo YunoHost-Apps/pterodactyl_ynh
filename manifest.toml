@@ -7,7 +7,7 @@ name = "Pterodactyl"
 description.en = "Game server management panel"
 description.fr = "Panneau de gestion du serveur de jeu"
 
-version = "1.12.1~ynh1"
+version = "1.12.2~ynh1"
 
 maintainers = [ ]
 
@@ -57,8 +57,8 @@ ram.runtime = "150M"
 
     [resources.sources.main]
     in_subdir = false
-    url = "https://github.com/pterodactyl/panel/releases/download/v1.12.1/panel.tar.gz"
-    sha256 = "e6d26cf4090793ee05cb0857978533dde37d4e524e758093e22bf09d03dedba3"
+    url = "https://github.com/pterodactyl/panel/releases/download/v1.12.2/panel.tar.gz"
+    sha256 = "415a76a11d01c733aab872bddb2b909c5e383e47bc2e9a63a316bbb7e11ee9b7"
 
     autoupdate.strategy = "latest_github_release"
     autoupdate.asset = "^panel\\.tar\\.gz$"
